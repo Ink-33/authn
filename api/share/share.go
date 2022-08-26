@@ -46,7 +46,7 @@ type CollectedClientData struct {
 	Version uint32 // DWORD dwVersion
 
 	// Size of the pbClientDataJSON field.
-	ClientDataJSONSize uint32 // DWORD cbClientDataJSON
+	ClientDataJSONLen uint32 // DWORD cbClientDataJSON
 	// UTF-8 encoded JSON serialization of the client data.
 	// _Field_size_bytes_ (cbClientDataJSON)
 	ClientDataJSON uintptr // PBYTE              pbClientDataJSON
@@ -55,15 +55,22 @@ type CollectedClientData struct {
 	HashAlgID *uint16 // LPCWSTR pwszHashAlgId
 }
 
-// CoseCredentialParameters is the information about credential parameters.
-type CoseCredentialParameters struct {
-	CredentialParametersSize uint32 // DWORD cCredentialParameters;
+// CollectedClient is the information about client data json.
+type CollectedClient struct {
+	Type      string `json:"type"`
+	Challenge string `json:"challenge"`
+	Origin    string `json:"origin"`
+}
+
+// COSECredentialParameters is the information about credential parameters.
+type COSECredentialParameters struct {
+	CredentialParametersLen uint32 // DWORD cCredentialParameters;
 	// _Field_size_(cCredentialParameters)
 	CredentialParameters uintptr // PWEBAUTHN_COSE_CREDENTIAL_PARAMETER pCredentialParameters;
 }
 
-// CoseCredentialParameter is the information about credential parameter.
-type CoseCredentialParameter struct {
+// COSECredentialParameter is the information about credential parameter.
+type COSECredentialParameter struct {
 	// Version of this structure, to allow for modifications in the future.
 	Version uint32 //DWORD dwVersion;
 
@@ -80,7 +87,7 @@ type Credential struct {
 	Version uint32 // DWORD dwVersion;
 
 	// Size of pbID.
-	IDSize uint32 // DWORD cbId;
+	IDLen uint32 // DWORD cbId;
 	// Unique ID for this particular credential.
 	// _Field_size_bytes_(cbId)
 	ID uintptr // PBYTE pbId;
@@ -163,4 +170,16 @@ type AuthenticatorMakeCredentialOptions struct {
 
 	// Optional. BrowserInPrivate Mode. Defaulting to FALSE.
 	BrowserInPrivateMode bool //BOOL bBrowserInPrivateMode
+}
+
+// GetCredentialsOptions for WebAuthNGetPlatformCredentialList API
+type GetCredentialsOptions struct {
+	// Version of this structure, to allow for modifications in the future.
+	Version uint32 // DWORD dwVersion
+
+	// Optional.
+	RPID *uint16 //LPCWSTR pwszRpId
+
+	// Optional. BrowserInPrivate Mode. Defaulting to FALSE.
+	BrowserInPrivateMode bool // BOOL bBrowserInPrivateMode
 }

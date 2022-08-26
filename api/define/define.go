@@ -38,25 +38,27 @@ const (
 	WebAuthNRPEntityInformationCurrentVersion     = 1
 	WebAuthNUserEntityInformationCurrentVersion   = 1
 	WebAuthNClientDataCurrentVersion              = 1
-	WebAuthNCoseCredentialParameterCurrentVersion = 1
+	WebAuthNCOSECredentialParameterCurrentVersion = 1
 	WebAuthNCredentialCurrentVersion              = 1
+	WebAuthNCredentialDetailsCurrentVersion       = 1
+	WebAuthNGetCredentialsOptionsCurrentVersion   = 1
 )
 
 // credential parameters.
 const (
 	WebAuthNCredentialTypePublicKey = "public-key"
 
-	WebAuthNCoseAlgorithmECDSAP256WithSHA256 = -7
-	WebAuthNCoseAlgorithmECDSAP384WithSHA384 = -35
-	WebAuthNCoseAlgorithmECDSAP521WithSHA512 = -36
+	WebAuthNCOSEAlgorithmECDSAP256WithSHA256 = -7
+	WebAuthNCOSEAlgorithmECDSAP384WithSHA384 = -35
+	WebAuthNCOSEAlgorithmECDSAP521WithSHA512 = -36
 
-	WebAuthNCoseAlgorithmRSASSAPKCS1V15WithSHA256 = -257
-	WebAuthNCoseAlgorithmRSASSAPKCS1V15WithSHA384 = -258
-	WebAuthNCoseAlgorithmRSASSAPKCS1V15WithSHA512 = -259
+	WebAuthNCOSEAlgorithmRSASSAPKCS1V15WithSHA256 = -257
+	WebAuthNCOSEAlgorithmRSASSAPKCS1V15WithSHA384 = -258
+	WebAuthNCOSEAlgorithmRSASSAPKCS1V15WithSHA512 = -259
 
-	WebAuthNCoseAlgorithmRSAPSSWithSHA256 = -37
-	WebAuthNCoseAlgorithmRSAPSSWithSHA384 = -38
-	WebAuthNCoseAlgorithmRSAPSSWithSHA512 = -39
+	WebAuthNCOSEAlgorithmRSAPSSWithSHA256 = -37
+	WebAuthNCOSEAlgorithmRSAPSSWithSHA384 = -38
+	WebAuthNCOSEAlgorithmRSAPSSWithSHA512 = -39
 )
 
 // client data
@@ -65,5 +67,3 @@ const (
 	WebAuthNHashAlgorithmSHA384 = "SHA-384"
 	WebAuthNHashAlgorithmSHA512 = "SHA-512"
 )
-
-
