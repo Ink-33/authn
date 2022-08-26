@@ -4,6 +4,7 @@ import (
 	"syscall"
 	"unsafe"
 
+	"github.com/Ink-33/authn/api/hresult"
 	"github.com/Ink-33/authn/api/share"
 )
 
@@ -22,14 +23,18 @@ func AuthenticatorMakeCredential(hWnd uintptr,
 	pkCredParams *share.CoseCredentialParameters,
 	clientData *share.CollectedClientData,
 	options *share.AuthenticatorMakeCredentialOptions,
-	cerdAttestation uintptr) (uintptr, uintptr, error) {
-	return webauthn.MustFindProc("WebAuthNAuthenticatorMakeCredential").Call(hWnd,
+	cerdAttestation uintptr) error {
+	res, _, _ := webauthn.MustFindProc("WebAuthNAuthenticatorMakeCredential").Call(hWnd,
 		uintptr(unsafe.Pointer(rpInfo)),
 		uintptr(unsafe.Pointer(userInfo)),
 		uintptr(unsafe.Pointer(pkCredParams)),
 		uintptr(unsafe.Pointer(clientData)),
 		uintptr(unsafe.Pointer(options)),
 		cerdAttestation)
+	if res == 0 {
+		return nil
+	}
+	return hresult.HResult(res)
 }
 
 // IsUserVerifyingPlatformAuthenticatorAvailable checks if the device owns platform authenticators.

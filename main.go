@@ -7,7 +7,6 @@ import (
 
 	"github.com/Ink-33/authn/api"
 	"github.com/Ink-33/authn/api/define"
-	"github.com/Ink-33/authn/api/hresult"
 	"github.com/Ink-33/authn/api/share"
 	"github.com/Ink-33/authn/utils"
 )
@@ -18,7 +17,7 @@ func main() {
 	is := api.IsUserVerifyingPlatformAuthenticatorAvailable()
 	fmt.Printf("is: %v\n", is)
 	var a uintptr
-	b, c, _ := api.AuthenticatorMakeCredential(utils.GetConsoleWindows(),
+	err := api.AuthenticatorMakeCredential(utils.GetConsoleWindows(),
 		&share.RPInfo{
 			Version: define.WebAuthNRPEntityInformationCurrentVersion,
 			ID:      syscall.StringToUTF16Ptr("tttssss"),
@@ -45,6 +44,6 @@ func main() {
 		},
 		nil,
 		uintptr(unsafe.Pointer(&a)))
-	fmt.Println(a, b, c, hresult.GetHResultErr(b))
+	fmt.Println(a, err)
 
 }
