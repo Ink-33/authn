@@ -42,6 +42,14 @@ const (
 	WebAuthNCredentialCurrentVersion              = 1
 	WebAuthNCredentialDetailsCurrentVersion       = 1
 	WebAuthNGetCredentialsOptionsCurrentVersion   = 1
+
+	WebAuthNCredentialAttestationVersion1       = 1
+	WebAuthNCredentialAttestationVersion2       = 2
+	WebAuthNCredentialAttestationVersion3       = 3
+	WebAuthNCredentialAttestationVersion4       = 4
+	WebAuthNCredentialAttestationCurrentVersion = WebAuthNCredentialAttestationVersion4
+
+	WebAuthNCredentialEXCurrentVersion = 1
 )
 
 // credential parameters.
@@ -66,4 +74,25 @@ const (
 	WebAuthNHashAlgorithmSHA256 = "SHA-256"
 	WebAuthNHashAlgorithmSHA384 = "SHA-384"
 	WebAuthNHashAlgorithmSHA512 = "SHA-512"
+)
+
+// credential attestation
+const (
+	WebAuthNAttestationTypePacked  = "packed"
+	WebAuthNAttestationTypeU2F     = "fido-u2f"
+	WebAuthNAttestationTypeTPM     = "tpm"
+	WebAuthNAttestationTypeNone    = "none"
+	WebAuthAttestationDecodeNone   = 0
+	WebAuthAttestationDecodeCommon = 1
+	WebAuthAttestationVerTPM20     = "2.0"
+)
+
+// credential extra information (Transports)
+const (
+	WebAuthNCTAPTransportUSB       = 0x00000001
+	WebAuthNCTAPTransportNFC       = 0x00000002
+	WebAuthNCTAPTransportBLE       = 0x00000004
+	WebAuthNCTAPTransportTest      = 0x00000008
+	WebAuthNCTAPTransportInternal  = 0x00000010
+	WebAuthNCTAPTransportFlagsMask = 0x0000001F
 )

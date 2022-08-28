@@ -23,8 +23,8 @@ func AuthenticatorMakeCredential(hWnd uintptr,
 	userInfo *share.UserInfo,
 	pkCredParams *share.COSECredentialParameters,
 	clientData *share.CollectedClientData,
-	options *share.AuthenticatorMakeCredentialOptions,
-	cerdAttestation uintptr) error {
+	options *share.AuthenticatorMakeCredentialOptions) (attestation *share.CredentialAttestation, err error) {
+	cerdAttestation := uintptr(0)
 	res, _, _ := webauthn.MustFindProc("WebAuthNAuthenticatorMakeCredential").
 		Call(hWnd,
 			uintptr(unsafe.Pointer(rpInfo)),
@@ -32,11 +32,11 @@ func AuthenticatorMakeCredential(hWnd uintptr,
 			uintptr(unsafe.Pointer(pkCredParams)),
 			uintptr(unsafe.Pointer(clientData)),
 			uintptr(unsafe.Pointer(options)),
-			cerdAttestation)
+			uintptr(unsafe.Pointer(&cerdAttestation)))
 	if res == 0 {
-		return nil
+		return (*share.CredentialAttestation)(unsafe.Pointer(cerdAttestation)), nil
 	}
-	return hresult.HResult(res)
+	return nil, hresult.HResult(res)
 }
 
 // IsUserVerifyingPlatformAuthenticatorAvailable checks if the device owns platform authenticators.
