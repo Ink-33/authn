@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"unsafe"
 
-	"github.com/Ink-33/authn/api"
 	"github.com/Ink-33/authn/api/define"
+	"github.com/Ink-33/authn/api/raw"
 	"github.com/Ink-33/authn/api/share"
 	"github.com/Ink-33/authn/utils"
 	"github.com/fxamacker/cbor/v2"
@@ -18,7 +18,7 @@ import (
 func main() {
 	hWnd := utils.GetConsoleWindows()
 	fmt.Printf("hWnd: %v\n", hWnd)
-	is := api.IsUserVerifyingPlatformAuthenticatorAvailable()
+	is := raw.IsUserVerifyingPlatformAuthenticatorAvailable()
 	fmt.Printf("is: %v\n", is)
 	type user struct {
 		Name        string
@@ -83,7 +83,7 @@ func main() {
 			Alg:            define.WebAuthNCOSEAlgorithmRSASSAPKCS1V15WithSHA256,
 		}}
 
-	a, err := api.AuthenticatorMakeCredential(utils.GetConsoleWindows(),
+	a, err := raw.AuthenticatorMakeCredential(utils.GetConsoleWindows(),
 		&share.RPInfo{
 			Version: define.WebAuthNRPEntityInformationCurrentVersion,
 			ID:      windows.StringToUTF16Ptr("go.webauthn.demo.app"),
