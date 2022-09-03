@@ -84,6 +84,8 @@ type COSECredentialParameter struct {
 }
 
 //Credential is the information about credential.
+//
+// _WEBAUTHN_CREDENTIAL
 type Credential struct {
 	// Version of this structure, to allow for modifications in the future.
 	Version uint32 // DWORD dwVersion;
@@ -99,6 +101,8 @@ type Credential struct {
 }
 
 //Credentials is the information about credentials.
+//
+// _WEBAUTHN_CREDENTIALS
 type Credentials struct {
 	CredentialsLen uint32 // DWORD cCredentials;
 	// _Field_size_(cCredentials)
@@ -264,6 +268,8 @@ type Extension struct {
 }
 
 // CredentialEX is the information about credential with extra information, such as, dwTransports
+//
+// _WEBAUTHN_CREDENTIAL_EX
 type CredentialEX struct {
 	// Version of this structure, to allow for modifications in the future.
 	Version uint32 // DWORD dwVersion;
@@ -282,8 +288,165 @@ type CredentialEX struct {
 }
 
 // CredentialList is the information about credential list with extra information
+//
+// _WEBAUTHN_CREDENTIAL_LIST
 type CredentialList struct {
 	Credentials uint32 // DWORD cCredentials;
 	// _Field_size_            (cCredentials)
 	CredentialsPtr *CredentialEX // PWEBAUTHN_CREDENTIAL_EX *ppCredentials
+}
+
+// AuthenticatorGetAssertionOptions ...
+type AuthenticatorGetAssertionOptions struct {
+	// Version of this structure, to allow for modifications in the future.
+	Version uint32 // DWORD
+
+	// Time that the operation is expected to complete within.
+	// This is used as guidance, and can be overridden by the platform.
+	TimeoutMilliseconds uint32 // DWORD
+
+	// Allowed Credentials List.
+	CredentialList Credentials // WEBAUTHN_CREDENTIALS CredentialList
+
+	// Optional extensions to parse when performing the operation.
+	Extensions Extensions // WEBAUTHN_EXTENSIONS Extensions
+
+	// Optional. Platform vs Cross-Platform Authenticators.
+	AuthenticatorAttachment uint32 // DWORD dwAuthenticatorAttachment
+
+	// User Verification Requirement.
+	UserVerificationRequirement uint32 // DWORD dwUserVerificationRequirement
+
+	// Flags
+	Flags uint32 // DWORD dwFlags
+
+	//
+	// The following fields have been added in WEBAUTHN_AUTHENTICATOR_GET_ASSERTION_OPTIONS_VERSION_2
+	//
+
+	// Optional identifier for the U2F AppId. Converted to UTF8 before being hashed. Not lower cased.
+	U2fAppID *uint16 // PCWSTR pwszU2fAppId
+
+	// If the following is non-NULL, then, set to TRUE if the above pwszU2fAppid was used instead of
+	// PCWSTR pwszRpId;
+	IsU2fAppIDUsed *bool // BOOL *pbU2fAppId
+
+	//
+	// The following fields have been added in WEBAUTHN_AUTHENTICATOR_GET_ASSERTION_OPTIONS_VERSION_3
+	//
+
+	// Cancellation Id - Optional - See WebAuthNGetCancellationId
+	CancellationID *windows.GUID // GUID *pCancellationId
+
+	//
+	// The following fields have been added in WEBAUTHN_AUTHENTICATOR_GET_ASSERTION_OPTIONS_VERSION_4
+	//
+
+	// Allow Credential List. If present, "CredentialList" will be ignored.
+	AllowCredentialList *CredentialList // PWEBAUTHN_CREDENTIAL_LIST pAllowCredentialList
+
+	//
+	// The following fields have been added in WEBAUTHN_AUTHENTICATOR_GET_ASSERTION_OPTIONS_VERSION_5
+	//
+
+	CredLargeBlobOperation uint32 // DWORD dwCredLargeBlobOperation
+
+	// Size of pbCredLargeBlob
+	CredLargeBlobLen uint32 // DWORD              cbCredLargeBlob
+	// _Field_size_bytes_ (cbCredLargeBlob)
+	CredLargeBlobPtr byte // PBYTE              pbCredLargeBlob
+
+	//
+	// The following fields have been added in WEBAUTHN_AUTHENTICATOR_GET_ASSERTION_OPTIONS_VERSION_6
+	//
+
+	// PRF values which will be converted into HMAC-SECRET values according to WebAuthn Spec.
+	HMACSecretSaltValues *HMACSecretSaltValues //  PWEBAUTHN_HMAC_SECRET_SALT_VALUES pHmacSecretSaltValues
+
+	// Optional. BrowserInPrivate Mode. Defaulting to FALSE.
+	BrowserInPrivateMode bool // BOOL bBrowserInPrivateMode
+}
+
+// HMACSecretSalt ...
+//
+// _WEBAUTHN_HMAC_SECRET_SALT
+type HMACSecretSalt struct {
+	// Size of pbFirst.
+	FirstLen uint32 // DWORD              cbFirst
+	// _Field_size_bytes_ (cbFirst)
+	FirstPtr *byte // PBYTE              pbFirst // Required
+
+	// Size of pbSecond.
+	SecondLen uint32 // DWORD              cbSecond
+	// _Field_size_bytes_ (cbSecond)
+	SecondPtr *byte // PBYTE              pbSecond
+}
+
+// CredWithHMACSecretSalt ...
+//
+// _WEBAUTHN_CRED_WITH_HMAC_SECRET_SALT
+type CredWithHMACSecretSalt struct {
+	// Size of pbCredID.
+	CredIDLen uint32 // DWORD              cbCredID
+	// _Field_size_bytes_ (cbCredID)
+	CredIDPtr *byte // PBYTE              pbCredID // Required
+
+	// PRF Values for above credential
+	HMACSecretSalt *HMACSecretSalt // PWEBAUTHN_HMAC_SECRET_SALT pHmacSecretSalt // Required
+}
+
+// HMACSecretSaltValues ...
+//
+// _WEBAUTHN_HMAC_SECRET_SALT_VALUES
+type HMACSecretSaltValues struct {
+	GlobalHmacSalt *HMACSecretSalt // PWEBAUTHN_HMAC_SECRET_SALT pGlobalHmacSalt
+
+	CredWithHMACSecretSaltListLen uint32 // DWORD  cCredWithHmacSecretSaltList
+	// _Field_size_                         (cCredWithHmacSecretSaltList)
+	CredWithHMACSecretSaltListPtr *CredWithHMACSecretSalt // PWEBAUTHN_CRED_WITH_HMAC_SECRET_SALT pCredWithHmacSecretSaltList
+}
+
+type Assertion struct {
+	// Version of this structure, to allow for modifications in the future.
+	Version uint32 // DWORD dwVersion;
+
+	// Size of cbAuthenticatorData.
+	AuthenticatorDataLen uint32 // DWORD cbAuthenticatorData;
+	// Authenticator data that was created for this assertion.
+	// _Field_size_bytes_(cbAuthenticatorData)
+	AuthenticatorDataPtr *byte // PBYTE pbAuthenticatorData;
+
+	// Size of pbSignature.
+	SignatureLen uint32 // DWORD cbSignature;
+	// Signature that was generated for this assertion.
+	// _Field_size_bytes_(cbSignature)
+	SignaturePtr *byte // PBYTE pbSignature;
+
+	// Credential that was used for this assertion.
+	Credential Credential // WEBAUTHN_CREDENTIAL Credential;
+
+	// Size of User Id
+	UserIDLen uint32 // DWORD cbUserId;
+	// UserId
+	// _Field_size_bytes_(cbUserId)
+	UserIDPtr *byte // PBYTE pbUserId;
+
+	//
+	// Following fields have been added in WEBAUTHN_ASSERTION_VERSION_2
+	//
+
+	Extensions Extensions // WEBAUTHN_EXTENSIONS Extensions
+
+	// Size of pbCredLargeBlob
+	CredLargeBlobLen uint32 // DWORD              cbCredLargeBlob
+	// _Field_size_bytes_ (cbCredLargeBlob)
+	CredLargeBlobPtr *byte // PBYTE              pbCredLargeBlob
+
+	CredLargeBlobStatus uint32 // DWORD dwCredLargeBlobStatus
+
+	//
+	// Following fields have been added in WEBAUTHN_ASSERTION_VERSION_3
+	//
+
+	HMACSecret *HMACSecretSalt //PWEBAUTHN_HMAC_SECRET_SALT pHmacSecret
 }

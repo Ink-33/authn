@@ -1,115 +1,22 @@
 package main
 
 import (
+	"crypto/rand"
 	"encoding/base64"
-	"encoding/json"
 	"fmt"
 	"unsafe"
 
-	"github.com/Ink-33/authn/api/define"
-	"github.com/Ink-33/authn/api/raw"
-	"github.com/Ink-33/authn/api/share"
+	"github.com/Ink-33/authn/api"
 	"github.com/Ink-33/authn/utils"
 	"github.com/fxamacker/cbor/v2"
-	"github.com/google/uuid"
-	"golang.org/x/sys/windows"
 )
 
 func main() {
-	hWnd := utils.GetConsoleWindows()
-	fmt.Printf("hWnd: %v\n", hWnd)
-	is := raw.IsUserVerifyingPlatformAuthenticatorAvailable()
-	fmt.Printf("is: %v\n", is)
-	type user struct {
-		Name        string
-		DisplayName string
-		ID          []byte
-	}
-	u := user{
-		Name:        "test",
-		DisplayName: "Test",
-		ID:          []byte("oI24"),
-	}
-	chanlleng, err := utils.CreateChallenge()
-	if err != nil {
-		panic(err)
-	}
-	cd := share.CollectedClient{
-		Type:      "webauthn.create",
-		Challenge: chanlleng,
-		Origin:    "local://demo.app",
-	}
-	cdjson, err := json.Marshal(cd)
-	if err != nil {
-		panic(err)
-	}
-	winguid, err := windows.GUIDFromString("{" + uuid.New().String() + "}")
-	if err != nil {
-		panic(err)
-	}
-	opt := &share.AuthenticatorMakeCredentialOptions{
-		Version:             define.WebAuthNAuthenticatorMakeCredentialOptionsCurrentVersion,
-		TimeoutMilliseconds: 30000,
-		CredentialList: share.Credentials{
-			CredentialsLen: 0,
-			CredentialsPtr: nil,
-		},
-		Extensions: share.Extensions{
-			ExtensionsLen: 0,
-			ExtensionsPrt: nil,
-		},
-		AuthenticatorAttachment:         define.WebAuthNAuthenticatorAttachmentAny,
-		RequireResidentKey:              false,
-		UserVerificationRequirement:     define.WebAuthNUserVerificationRequirementDiscouraged,
-		AttestationConveyancePreference: define.WebAuthNAttestationConveyancePreferenceNone,
-		CancellationID:                  &winguid,
-		ExcludeCredentialList: &share.CredentialList{
-			Credentials:    0,
-			CredentialsPtr: &share.CredentialEX{},
-		},
-		EnterpriseAttestation: define.WebAuthNEnterpriseAttestationNone,
-		LargeBlobSupport:      define.WebAuthNLargeBlobSupportNone,
-		PreferResidentKey:     false,
-		BrowserInPrivateMode:  false,
-	}
-	coses := []share.COSECredentialParameter{
-		{
-			Version:        define.WebAuthNCOSECredentialParameterCurrentVersion,
-			CredentialType: windows.StringToUTF16Ptr(define.WebAuthNCredentialTypePublicKey),
-			Alg:            define.WebAuthNCOSEAlgorithmECDSAP256WithSHA256,
-		},
-		{Version: define.WebAuthNCOSECredentialParameterCurrentVersion,
-			CredentialType: windows.StringToUTF16Ptr(define.WebAuthNCredentialTypePublicKey),
-			Alg:            define.WebAuthNCOSEAlgorithmRSASSAPKCS1V15WithSHA256,
-		}}
-
-	a, err := raw.AuthenticatorMakeCredential(utils.GetConsoleWindows(),
-		&share.RPInfo{
-			Version: define.WebAuthNRPEntityInformationCurrentVersion,
-			ID:      windows.StringToUTF16Ptr("go.webauthn.demo.app"),
-			Name:    windows.StringToUTF16Ptr("WebAuthN From Golang"),
-			Icon:    windows.StringToUTF16Ptr(""),
-		},
-		&share.UserInfo{
-			Version:     define.WebAuthNUserEntityInformationCurrentVersion,
-			IDLen:       uint32(len(u.ID)),
-			IDPtr:       &u.ID[0],
-			Name:        windows.StringToUTF16Ptr(u.Name),
-			Icon:        windows.StringToUTF16Ptr(""),
-			DisplayName: windows.StringToUTF16Ptr(u.DisplayName),
-		},
-		&share.COSECredentialParameters{
-			CredentialParametersLen: uint32(len(coses)),
-			CredentialParameters:    &coses[0],
-		},
-		&share.CollectedClientData{
-			Version:           define.WebAuthNClientDataCurrentVersion,
-			ClientDataJSONLen: uint32(len(cdjson)),
-			ClientDataJSONPtr: &cdjson[0],
-			HashAlgID:         windows.StringToUTF16Ptr(define.WebAuthNHashAlgorithmSHA256),
-		},
-		opt,
-	)
+	c := api.NewClient("go.webauthn.demo.app", "WebAuthN From Golang", "")
+	id := make([]byte, 32)
+	_, _ = rand.Read(id)
+	u := &testUser{id}
+	a, err := c.MakeCredential(u, "local://demo.app", nil)
 	if err != nil {
 		panic(err)
 	}
@@ -143,4 +50,24 @@ func main() {
 	fmt.Printf("CredentialID: %v\n",
 		base64.RawURLEncoding.EncodeToString(unsafe.Slice(a.CredentialIDPtr, a.CredentialIDLen)))
 
+}
+
+type testUser struct {
+	id []byte
+}
+
+func (user *testUser) GetID() []byte {
+	return user.id
+}
+
+func (user *testUser) GetName() string {
+	return "test@example.com"
+}
+
+func (user *testUser) GetDisplayName() string {
+	return "Test User"
+}
+
+func (user *testUser) GetIcon() string {
+	return ""
 }

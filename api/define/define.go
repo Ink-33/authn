@@ -1,5 +1,11 @@
 package define
 
+// Ceremony type.
+const (
+	CollectedClientCeremonyCreate = "webauthn.create"
+	CollectedClientCeremonyGet    = "webauthn.get"
+)
+
 // Options.
 const (
 	WebAuthNAuthenticatorAttachmentAny                = 0
@@ -31,6 +37,14 @@ const (
 	WebAuthNAuthenticatorMakeCredentialOptionsVersion4       = 4
 	WebAuthNAuthenticatorMakeCredentialOptionsVersion5       = 5
 	WebAuthNAuthenticatorMakeCredentialOptionsCurrentVersion = WebAuthNAuthenticatorMakeCredentialOptionsVersion5
+
+	WebAuthNAuthenticatorGetAssertionOptionsVersion1       = 1
+	WebAuthNAuthenticatorGetAssertionOptionsVersion2       = 2
+	WebAuthNAuthenticatorGetAssertionOptionsVersion3       = 3
+	WebAuthNAuthenticatorGetAssertionOptionsVersion4       = 4
+	WebAuthNAuthenticatorGetAssertionOptionsVersion5       = 5
+	WebAuthNAuthenticatorGetAssertionOptionsVersion6       = 6
+	WebAuthNAuthenticatorGetAssertionOptionsCurrentVersion = WebAuthNAuthenticatorGetAssertionOptionsVersion6
 )
 
 // version
@@ -95,4 +109,17 @@ const (
 	WebAuthNCTAPTransportTest      = 0x00000008
 	WebAuthNCTAPTransportInternal  = 0x00000010
 	WebAuthNCTAPTransportFlagsMask = 0x0000001F
+)
+
+// get attestation options
+const (
+	WebAuthNCerdLargeBlobOperationNone   = 0
+	WebAuthNCerdLargeBlobOperationGet    = 1
+	WebAuthNCerdLargeBlobOperationSet    = 2
+	WebAuthNCerdLargeBlobOperationDelete = 3
+
+	/*
+	   Information about flags.
+	*/
+	WebAuthNAuthenticatorHMACSecretValuesFlag = 0x00100000
 )
