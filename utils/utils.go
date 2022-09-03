@@ -6,6 +6,7 @@ import (
 	"reflect"
 	"unsafe"
 
+	"github.com/google/uuid"
 	"golang.org/x/sys/windows"
 )
 
@@ -37,9 +38,18 @@ func S2B(s string) (b []byte) {
 
 // CreateChallenge generates a new chanllenge that will be sent to the authenticator.
 //
+// In order to prevent replay attacks, the challenges MUST contain enough entropy to
+// make guessing them infeasible. Challenges SHOULD therefore be at least 16 bytes long.
+// See https://w3c.github.io/webauthn/#sctn-cryptographic-challenges
+//
+// Default 32 bytes length will be used if the given length is less than 16 or more than 256
+//
 // Challenge is encoded in base64.
-func CreateChallenge() (string, error) {
-	challenge := make([]byte, 32)
+func CreateChallenge(len int) (string, error) {
+	if len < 16 || len > 256 {
+		len = 16
+	}
+	challenge := make([]byte, len)
 	_, err := rand.Read(challenge)
 	if err != nil {
 		return "", err
@@ -54,4 +64,8 @@ func BytesBuilder(ptr *byte, len uint32) (buf []byte) {
 	p.Cap = int(len)
 	p.Len = int(len)
 	return
+}
+
+func CreateCancelID() (windows.GUID, error) {
+	return windows.GUIDFromString("{" + uuid.New().String() + "}")
 }
