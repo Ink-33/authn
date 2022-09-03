@@ -26,13 +26,15 @@ func AuthenticatorMakeCredential(hWnd uintptr,
 	options *share.AuthenticatorMakeCredentialOptions) (attestation *share.CredentialAttestation, err error) {
 	cerdAttestation := uintptr(0)
 	res, _, _ := webauthn.MustFindProc("WebAuthNAuthenticatorMakeCredential").
-		Call(hWnd,
+		Call(
+			hWnd,
 			uintptr(unsafe.Pointer(rpInfo)),
 			uintptr(unsafe.Pointer(userInfo)),
 			uintptr(unsafe.Pointer(pkCredParams)),
 			uintptr(unsafe.Pointer(clientData)),
 			uintptr(unsafe.Pointer(options)),
-			uintptr(unsafe.Pointer(&cerdAttestation)))
+			uintptr(unsafe.Pointer(&cerdAttestation)),
+		)
 	if res == 0 {
 		return (*share.CredentialAttestation)(unsafe.Pointer(cerdAttestation)), nil
 	}
@@ -77,4 +79,23 @@ func GetPlatformCredentialList(options share.GetCredentialsOptions) (uintptr, er
 		return result, nil
 	}
 	return result, hresult.HResult(res)
+}
+
+// AuthenticatorGetAssertion ...
+func AuthenticatorGetAssertion(hWnd uintptr,
+	rpID *uint16,
+	clientData *share.CollectedClientData,
+	opts *share.AuthenticatorGetAssertionOptions) (assertion *share.Assertion, err error) {
+	var result uintptr
+	res, _, _ := webauthn.MustFindProc("WebAuthNAuthenticatorGetAssertion").
+		Call(
+			hWnd,
+			uintptr(unsafe.Pointer(clientData)),
+			uintptr(unsafe.Pointer(opts)),
+			uintptr(unsafe.Pointer(&result)),
+		)
+	if res == 0 {
+		return (*share.Assertion)(unsafe.Pointer(result)), nil
+	}
+	return nil, hresult.HResult(res)
 }
