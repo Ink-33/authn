@@ -3,6 +3,8 @@ package share
 import "golang.org/x/sys/windows"
 
 // RPInfo is the information about an RP Entity
+//
+// _WEBAUTHN_RP_ENTITY_INFORMATION
 type RPInfo struct {
 	// Version of this structure, to allow for modifications in the future.
 	// This field is required and should be set to CURRENT_VERSION above.
@@ -20,6 +22,8 @@ type RPInfo struct {
 }
 
 // UserInfo is the information about an User Entity
+//
+// _WEBAUTHN_USER_ENTITY_INFORMATION
 type UserInfo struct {
 	// Version of this structure, to allow for modifications in the future.
 	// This field is required and should be set to CURRENT_VERSION above.
@@ -406,6 +410,7 @@ type HMACSecretSaltValues struct {
 	CredWithHMACSecretSaltListPtr *CredWithHMACSecretSalt // PWEBAUTHN_CRED_WITH_HMAC_SECRET_SALT pCredWithHmacSecretSaltList
 }
 
+// Assertion is authenticatorGetAssertion output.
 type Assertion struct {
 	// Version of this structure, to allow for modifications in the future.
 	Version uint32 // DWORD dwVersion;
@@ -449,4 +454,35 @@ type Assertion struct {
 	//
 
 	HMACSecret *HMACSecretSalt //PWEBAUTHN_HMAC_SECRET_SALT pHmacSecret
+}
+
+// CredentialDetails is the Credential Information for WebAuthNGetPlatformCredentialList API
+//
+// _WEBAUTHN_CREDENTIAL_DETAILS
+type CredentialDetails struct {
+	// Version of this structure, to allow for modifications in the future.
+	Version uint32 // DWORD dwVersion
+
+	// Size of pbCredentialID.
+	CredentialIDLen uint32 // DWORD              cbCredentialID
+	// _Field_size_bytes_ (cbCredentialID)
+	CredentialIDPtr *byte // PBYTE              pbCredentialID
+
+	// RP Info
+	RPInformation *RPInfo // PWEBAUTHN_RP_ENTITY_INFORMATION pRpInformation
+
+	// User Info
+	UserInformation *UserInfo // PWEBAUTHN_USER_ENTITY_INFORMATION pUserInformation
+
+	// Removable or not.
+	Removable bool // BOOL bRemovable
+}
+
+// CredentialDetailsList ...
+//
+// _WEBAUTHN_CREDENTIAL_DETAILS_LIST
+type CredentialDetailsList struct {
+	CredentialDetailsLen uint32 // DWORD                        cCredentialDetails
+	// _Field_size_                 (cCredentialDetails)
+	CredentialDetailsPtr **CredentialDetails // PWEBAUTHN_CREDENTIAL_DETAILS *ppCredentialDetails
 }

@@ -1,10 +1,12 @@
 package api
 
 import (
+	"unsafe"
+
 	"github.com/Ink-33/authn/api/define"
 	"github.com/Ink-33/authn/api/raw"
 	"github.com/Ink-33/authn/api/share"
-	"github.com/Ink-33/authn/utils"
+	"github.com/Ink-33/authn/api/utils"
 	"golang.org/x/sys/windows"
 )
 
@@ -53,7 +55,7 @@ func (c *WebAuthNClient) SetDefaultCOSE() {
 	}
 }
 
-func (c *WebAuthNClient) MakeCredential(user User, origin string, opt *share.AuthenticatorMakeCredentialOptions) (*share.CredentialAttestation, error) {
+func (c *WebAuthNClient) MakeCredential(user User, origin string, opts *share.AuthenticatorMakeCredentialOptions) (*share.CredentialAttestation, error) {
 	if len(c.COSECredentialParameters) == 0 {
 		c.SetDefaultCOSE()
 	}
@@ -65,17 +67,17 @@ func (c *WebAuthNClient) MakeCredential(user User, origin string, opt *share.Aut
 	if err != nil {
 		return nil, err
 	}
-	if opt == nil {
-		opt = NewMakeCerdOpts()
+	if opts == nil {
+		opts = NewMakeCerdOpts()
 	}
 	if c.Timeout != 0 {
-		opt.TimeoutMilliseconds = c.Timeout
+		opts.TimeoutMilliseconds = c.Timeout
 	}
 	cancelID, err := utils.CreateCancelID()
 	if err != nil {
 		return nil, err
 	}
-	opt.CancellationID = &cancelID
+	opts.CancellationID = &cancelID
 	return raw.AuthenticatorMakeCredential(utils.GetConsoleWindows(),
 		&c.RPInfo,
 		&share.UserInfo{
@@ -91,7 +93,7 @@ func (c *WebAuthNClient) MakeCredential(user User, origin string, opt *share.Aut
 			CredentialParameters:    c.COSECredentialParameters[0],
 		},
 		cd,
-		opt)
+		opts)
 }
 
 func (c *WebAuthNClient) GetAssertion(origin string, opts *share.AuthenticatorGetAssertionOptions) (*share.Assertion, error) {
@@ -109,4 +111,18 @@ func (c *WebAuthNClient) GetAssertion(origin string, opts *share.AuthenticatorGe
 		cd,
 		opts,
 	)
+}
+
+func (c *WebAuthNClient) GetPlatformCredentialList() ([]*share.CredentialDetails, error) {
+	res, err := raw.GetPlatformCredentialList(
+		&share.GetCredentialsOptions{
+			Version:              define.WebAuthNGetCredentialsOptionsCurrentVersion,
+			RPID:                 c.RPInfo.ID,
+			BrowserInPrivateMode: false,
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+	return unsafe.Slice(res.CredentialDetailsPtr, int(res.CredentialDetailsLen)), nil
 }

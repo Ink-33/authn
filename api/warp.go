@@ -38,6 +38,36 @@ func NewMakeCerdOpts() *share.AuthenticatorMakeCredentialOptions {
 	}
 }
 
+// NewGetAssertionOptions returns an AuthenticatorGetAssertionOptions struct pointer whih default value.
+func NewGetAssertionOptions() *share.AuthenticatorGetAssertionOptions {
+	return &share.AuthenticatorGetAssertionOptions{
+		Version:             define.WebAuthNAuthenticatorGetAssertionOptionsCurrentVersion,
+		TimeoutMilliseconds: 60000,
+		CredentialList: share.Credentials{
+			CredentialsLen: 0,
+			CredentialsPtr: nil,
+		},
+		Extensions: share.Extensions{
+			ExtensionsLen: 0,
+			ExtensionsPrt: nil,
+		},
+		AuthenticatorAttachment:     define.WebAuthNAuthenticatorAttachmentAny,
+		UserVerificationRequirement: define.WebAuthNUserVerificationRequirementDiscouraged,
+		Flags:                       0,
+		U2fAppID:                    nil,
+		IsU2fAppIDUsed:              nil,
+		CancellationID:              nil,
+		AllowCredentialList: &share.CredentialList{
+			Credentials:    0,
+			CredentialsPtr: nil,
+		},
+		CredLargeBlobOperation: define.WebAuthNCerdLargeBlobOperationNone,
+		CredLargeBlobLen:       0,
+		CredLargeBlobPtr:       0,
+		HMACSecretSaltValues:   nil,
+	}
+}
+
 // CreateClientData ...
 func CreateClientData(action, origin, challenge, HashAlgID string) (*share.CollectedClientData, error) {
 	cd := share.CollectedClient{

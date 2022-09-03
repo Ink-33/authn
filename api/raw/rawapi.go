@@ -5,7 +5,7 @@ import (
 
 	"github.com/Ink-33/authn/api/hresult"
 	"github.com/Ink-33/authn/api/share"
-	"github.com/Ink-33/authn/utils"
+	"github.com/Ink-33/authn/api/utils"
 	"golang.org/x/sys/windows"
 )
 
@@ -67,18 +67,18 @@ func IsUserVerifyingPlatformAuthenticatorAvailable() uintptr {
 //
 func GetErrorName(hr hresult.HResult) string {
 	msg, _, _ := webauthn.MustFindProc("WebAuthNGetErrorName").Call(uintptr(hr))
-	return utils.UTF16toString((*uint16)(unsafe.Pointer(msg)))
+	return utils.UTF16PtrtoString((*uint16)(unsafe.Pointer(msg)))
 }
 
 // GetPlatformCredentialList ...
-func GetPlatformCredentialList(options share.GetCredentialsOptions) (uintptr, error) {
+func GetPlatformCredentialList(options *share.GetCredentialsOptions) (*share.CredentialDetailsList, error) {
 	var result uintptr
 	res, _, _ := webauthn.MustFindProc("WebAuthNGetPlatformCredentialList").
-		Call(uintptr(unsafe.Pointer(&options)), uintptr(unsafe.Pointer(&result)))
+		Call(uintptr(unsafe.Pointer(options)), uintptr(unsafe.Pointer(&result)))
 	if res == 0 {
-		return result, nil
+		return (*share.CredentialDetailsList)(unsafe.Pointer(result)), nil
 	}
-	return result, hresult.HResult(res)
+	return nil, hresult.HResult(res)
 }
 
 // AuthenticatorGetAssertion ...
@@ -90,6 +90,7 @@ func AuthenticatorGetAssertion(hWnd uintptr,
 	res, _, _ := webauthn.MustFindProc("WebAuthNAuthenticatorGetAssertion").
 		Call(
 			hWnd,
+			uintptr(unsafe.Pointer(rpID)),
 			uintptr(unsafe.Pointer(clientData)),
 			uintptr(unsafe.Pointer(opts)),
 			uintptr(unsafe.Pointer(&result)),

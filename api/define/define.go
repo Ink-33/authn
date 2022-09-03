@@ -30,6 +30,30 @@ const (
 	WebAuthNLargeBlobSupportNone      = 0
 	WebAuthNLargeBlobSupportRequired  = 1
 	WebAuthNLargeBlobSupportPreferred = 2
+)
+
+// version
+const (
+	WebAuthNRPEntityInformationCurrentVersion     = 1
+	WebAuthNUserEntityInformationCurrentVersion   = 1
+	WebAuthNClientDataCurrentVersion              = 1
+	WebAuthNCOSECredentialParameterCurrentVersion = 1
+	WebAuthNCredentialCurrentVersion              = 1
+	WebAuthNCredentialDetailsCurrentVersion       = 1
+
+	WebAuthNCredentialAttestationVersion1       = 1
+	WebAuthNCredentialAttestationVersion2       = 2
+	WebAuthNCredentialAttestationVersion3       = 3
+	WebAuthNCredentialAttestationVersion4       = 4
+	WebAuthNCredentialAttestationCurrentVersion = WebAuthNCredentialAttestationVersion4
+
+	WebAuthNCredentialEXCurrentVersion = 1
+
+	WebAuthNGetCredentialsOptionsVersion1       = 1
+	WebAuthNGetCredentialsOptionsCurrentVersion = WebAuthNGetCredentialsOptionsVersion1
+
+	WebauthnCredentialDetailsVersion1       = 1
+	WebauthnCredentialDetailsCurrentVersion = WebauthnCredentialDetailsVersion1
 
 	WebAuthNAuthenticatorMakeCredentialOptionsVersion1       = 1
 	WebAuthNAuthenticatorMakeCredentialOptionsVersion2       = 2
@@ -45,25 +69,6 @@ const (
 	WebAuthNAuthenticatorGetAssertionOptionsVersion5       = 5
 	WebAuthNAuthenticatorGetAssertionOptionsVersion6       = 6
 	WebAuthNAuthenticatorGetAssertionOptionsCurrentVersion = WebAuthNAuthenticatorGetAssertionOptionsVersion6
-)
-
-// version
-const (
-	WebAuthNRPEntityInformationCurrentVersion     = 1
-	WebAuthNUserEntityInformationCurrentVersion   = 1
-	WebAuthNClientDataCurrentVersion              = 1
-	WebAuthNCOSECredentialParameterCurrentVersion = 1
-	WebAuthNCredentialCurrentVersion              = 1
-	WebAuthNCredentialDetailsCurrentVersion       = 1
-	WebAuthNGetCredentialsOptionsCurrentVersion   = 1
-
-	WebAuthNCredentialAttestationVersion1       = 1
-	WebAuthNCredentialAttestationVersion2       = 2
-	WebAuthNCredentialAttestationVersion3       = 3
-	WebAuthNCredentialAttestationVersion4       = 4
-	WebAuthNCredentialAttestationCurrentVersion = WebAuthNCredentialAttestationVersion4
-
-	WebAuthNCredentialEXCurrentVersion = 1
 )
 
 // credential parameters.
