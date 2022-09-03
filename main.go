@@ -7,19 +7,43 @@ import (
 	"unsafe"
 
 	"github.com/Ink-33/authn/api"
+	"github.com/Ink-33/authn/api/raw"
 	"github.com/Ink-33/authn/api/utils"
 	"github.com/fxamacker/cbor/v2"
 )
 
 func main() {
+	fmt.Printf("raw.GetAPIVersionNumber(): %v\n", raw.GetAPIVersionNumber())
+	fmt.Printf("raw.IsUserVerifyingPlatformAuthenticatorAvailable(): %v\n", raw.IsUserVerifyingPlatformAuthenticatorAvailable()) 
 	c := api.NewClient("go.webauthn.demo.app", "WebAuthN From Golang", "")
-	main3(c)
+loop:
+	fmt.Println("Select operation:")
+	fmt.Println("1:", "Make Credential")
+	fmt.Println("2:", "Get Assertion")
+	fmt.Println("3:", "Get Platform Credential List")
+	fmt.Println("0:", "Exit")
+	op := ""
+	fmt.Scanln(&op)
+	switch op {
+	case "0":
+		return
+	case "1":
+		main1(c)
+	case "2":
+		main2(c)
+	case "3":
+		main3(c)
+	default:
+		fmt.Println("?")
+	}
+	goto loop
 }
 
 func main3(c *api.WebAuthNClient) {
 	res, err := c.GetPlatformCredentialList()
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
+		return
 	}
 	for i, cd := range res {
 		fmt.Printf("c[%v].UserInformation.Name: %v\n", i, utils.UTF16PtrtoString(cd.UserInformation.Name))
@@ -33,7 +57,8 @@ func main2(c *api.WebAuthNClient) {
 	_, _ = rand.Read(id)
 	b, err := c.GetAssertion("local://demo.app", nil)
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
+		return
 	}
 	fmt.Printf("b: %v\n", b)
 }
@@ -43,7 +68,8 @@ func main1(c *api.WebAuthNClient) {
 	u := &testUser{id}
 	a, err := c.MakeCredential(u, "local://demo.app", nil)
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
+		return
 	}
 	fmt.Printf("a.Version: %v\n", a.Version)
 	fmt.Printf("a.FormatType: %v\n", utils.UTF16PtrtoString(a.FormatType))
@@ -61,25 +87,21 @@ func main1(c *api.WebAuthNClient) {
 	atM := map[string]any{}
 	err = cbor.Unmarshal(unsafe.Slice(a.AttestationPtr, a.AttestationLen), &atM)
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
+		return
 	}
 	fmt.Printf("Attestation: %v\n", atM)
 
 	atoM := map[string]any{}
 	err = cbor.Unmarshal(unsafe.Slice(a.AttestationObjectPtr, a.AttestationObjectLen), &atoM)
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
+		return
 	}
 	fmt.Printf("AttestationObject: %v\n", atoM)
 
 	fmt.Printf("CredentialID: %v\n",
 		base64.RawURLEncoding.EncodeToString(unsafe.Slice(a.CredentialIDPtr, a.CredentialIDLen)))
-
-	b, err := c.GetAssertion("local://demo.app", nil)
-	if err != nil {
-		panic(err)
-	}
-	fmt.Printf("b: %v\n", b)
 }
 
 type testUser struct {
