@@ -19,12 +19,11 @@ func GetAPIVersionNumber() uintptr {
 
 // AuthenticatorMakeCredential ...
 func AuthenticatorMakeCredential(hWnd uintptr,
-	rpInfo *share.RPInfo,
-	userInfo *share.UserInfo,
-	pkCredParams *share.COSECredentialParameters,
-	clientData *share.CollectedClientData,
-	options *share.AuthenticatorMakeCredentialOptions) (attestation *share.CredentialAttestation, err error) {
-	cerdAttestation := uintptr(0)
+	rpInfo *share.RawRPInfo,
+	userInfo *share.RawUserInfo,
+	pkCredParams *share.RawCOSECredentialParameters,
+	clientData *share.RawCollectedClientData,
+	options *share.RawAuthenticatorMakeCredentialOptions) (attestation *share.RawCredentialAttestation, err error) {
 	res, _, _ := webauthn.MustFindProc("WebAuthNAuthenticatorMakeCredential").
 		Call(
 			hWnd,
@@ -33,17 +32,16 @@ func AuthenticatorMakeCredential(hWnd uintptr,
 			uintptr(unsafe.Pointer(pkCredParams)),
 			uintptr(unsafe.Pointer(clientData)),
 			uintptr(unsafe.Pointer(options)),
-			uintptr(unsafe.Pointer(&cerdAttestation)),
+			uintptr(unsafe.Pointer(&attestation)),
 		)
 	if res == 0 {
-		return (*share.CredentialAttestation)(unsafe.Pointer(cerdAttestation)), nil
+		return attestation, nil
 	}
 	return nil, hresult.HResult(res)
 }
 
 // IsUserVerifyingPlatformAuthenticatorAvailable checks if the device owns platform authenticators.
-func IsUserVerifyingPlatformAuthenticatorAvailable() uintptr {
-	var is uintptr
+func IsUserVerifyingPlatformAuthenticatorAvailable() (is bool) {
 	_, _, _ = webauthn.MustFindProc("WebAuthNIsUserVerifyingPlatformAuthenticatorAvailable").
 		Call(uintptr(unsafe.Pointer(&is)))
 	return is
@@ -71,36 +69,51 @@ func GetErrorName(hr hresult.HResult) string {
 }
 
 // GetPlatformCredentialList ...
-func GetPlatformCredentialList(options *share.GetCredentialsOptions) (*share.CredentialDetailsList, error) {
+func GetPlatformCredentialList(options *share.RawGetCredentialsOptions) (credList []*share.CredentialDetails, err error) {
 	proc, err := webauthn.FindProc("WebAuthNGetPlatformCredentialList")
 	if err != nil {
 		return nil, err
 	}
-	var result uintptr
+	raw := &share.RawCredentialDetailsList{}
 	res, _, _ := proc.
-		Call(uintptr(unsafe.Pointer(options)), uintptr(unsafe.Pointer(&result)))
+		Call(uintptr(unsafe.Pointer(options)), uintptr(unsafe.Pointer(&raw)))
 	if res == 0 {
-		return (*share.CredentialDetailsList)(unsafe.Pointer(result)), nil
+		defer freePlatformCredentialList(raw)
+		return raw.DeRaw(), nil
 	}
 	return nil, hresult.HResult(res)
 }
 
-// AuthenticatorGetAssertion ...
+// freePlatformCredentialList frees the allocation for the WEBAUTHN_CREDENTIAL_DETAILS_LIST.
+func freePlatformCredentialList(list *share.RawCredentialDetailsList) {
+	_, _, _ = webauthn.MustFindProc("WebAuthNFreePlatformCredentialList").Call(uintptr(unsafe.Pointer(list)))
+}
+
+// AuthenticatorGetAssertion produces an assertion signature representing
+// an assertion by the authenticator that the user has consented to a specific transaction,
+// such as logging in or completing a purchase.
 func AuthenticatorGetAssertion(hWnd uintptr,
 	rpID *uint16,
-	clientData *share.CollectedClientData,
+	clientData *share.RawCollectedClientData,
 	opts *share.AuthenticatorGetAssertionOptions) (assertion *share.Assertion, err error) {
-	var result uintptr
+	raw := &share.RawAssertion{}
 	res, _, _ := webauthn.MustFindProc("WebAuthNAuthenticatorGetAssertion").
 		Call(
 			hWnd,
 			uintptr(unsafe.Pointer(rpID)),
 			uintptr(unsafe.Pointer(clientData)),
 			uintptr(unsafe.Pointer(opts)),
-			uintptr(unsafe.Pointer(&result)),
+			uintptr(unsafe.Pointer(&raw)),
 		)
 	if res == 0 {
-		return (*share.Assertion)(unsafe.Pointer(result)), nil
+		defer freeAssertion(raw)
+
+		return raw.DeRaw(), nil
 	}
 	return nil, hresult.HResult(res)
+}
+
+// FreeAssertion frees an assertion previously allocated by calling WebAuthNAuthenticatorGetAssertion.
+func freeAssertion(assertion *share.RawAssertion) {
+	_, _, _ = webauthn.MustFindProc("WebAuthNFreeAssertion").Call(uintptr(unsafe.Pointer(assertion)))
 }

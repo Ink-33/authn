@@ -14,7 +14,7 @@ import (
 
 func main() {
 	fmt.Printf("raw.GetAPIVersionNumber(): %v\n", raw.GetAPIVersionNumber())
-	fmt.Printf("raw.IsUserVerifyingPlatformAuthenticatorAvailable(): %v\n", raw.IsUserVerifyingPlatformAuthenticatorAvailable()) 
+	fmt.Printf("raw.IsUserVerifyingPlatformAuthenticatorAvailable(): %v\n", raw.IsUserVerifyingPlatformAuthenticatorAvailable())
 	c := api.NewClient("go.webauthn.demo.app", "WebAuthN From Golang", "")
 loop:
 	fmt.Println("Select operation:")
@@ -46,9 +46,9 @@ func main3(c *api.WebAuthNClient) {
 		return
 	}
 	for i, cd := range res {
-		fmt.Printf("c[%v].UserInformation.Name: %v\n", i, utils.UTF16PtrtoString(cd.UserInformation.Name))
-		fmt.Printf("c[%v].RPInformation.ID: %v\n", i, utils.UTF16PtrtoString(cd.RPInformation.ID))
-		fmt.Printf("c[%v].CredentialID: %v\n", i, unsafe.Slice(cd.CredentialIDPtr, cd.CredentialIDLen))
+		fmt.Printf("c[%v].UserInformation.Name: %v\n", i, cd.UserInformation.Name)
+		fmt.Printf("c[%v].RPInformation.ID: %v\n", i, cd.RPInformation.ID)
+		fmt.Printf("c[%v].CredentialID: %v\n", i, cd.CredentialID)
 		fmt.Printf("c[%v].Removable: %v\n", i, cd.Removable)
 	}
 }

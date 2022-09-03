@@ -20,6 +20,9 @@ func GetConsoleWindows() (hWnd uintptr) {
 
 // UTF16PtrtoString converts a pointer to a UTF16 string into a Go string.
 func UTF16PtrtoString(p *uint16) string {
+	if p == nil {
+		return ""
+	}
 	return windows.UTF16ToString((*[4096]uint16)(unsafe.Pointer(p))[:])
 }
 

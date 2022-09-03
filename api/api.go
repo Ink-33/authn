@@ -1,8 +1,6 @@
 package api
 
 import (
-	"unsafe"
-
 	"github.com/Ink-33/authn/api/define"
 	"github.com/Ink-33/authn/api/raw"
 	"github.com/Ink-33/authn/api/share"
@@ -19,9 +17,9 @@ type User interface {
 
 // WebAuthNClient ...
 type WebAuthNClient struct {
-	RPInfo                   share.RPInfo
-	COSECredentialParameters []*share.COSECredentialParameter
-	makeCredOpts             share.AuthenticatorMakeCredentialOptions
+	RPInfo                   share.RawRPInfo
+	COSECredentialParameters []*share.RawCOSECredentialParameter
+	makeCredOpts             share.RawAuthenticatorMakeCredentialOptions
 	challengeLength          int
 	Timeout                  uint32
 }
@@ -31,8 +29,8 @@ type WebAuthNClient struct {
 // An rpID MUST be a valid domain string. See https://w3c.github.io/webauthn/#rp-id
 func NewClient(rpID, rpName, rpIcon string) *WebAuthNClient {
 	c := &WebAuthNClient{
-		RPInfo:                   share.RPInfo{Version: define.WebAuthNRPEntityInformationCurrentVersion, ID: windows.StringToUTF16Ptr(rpID), Name: windows.StringToUTF16Ptr(rpName), Icon: windows.StringToUTF16Ptr(rpIcon)},
-		COSECredentialParameters: []*share.COSECredentialParameter{},
+		RPInfo:                   share.RawRPInfo{Version: define.WebAuthNRPEntityInformationCurrentVersion, ID: windows.StringToUTF16Ptr(rpID), Name: windows.StringToUTF16Ptr(rpName), Icon: windows.StringToUTF16Ptr(rpIcon)},
+		COSECredentialParameters: []*share.RawCOSECredentialParameter{},
 		challengeLength:          32,
 	}
 	c.SetDefaultCOSE()
@@ -41,7 +39,7 @@ func NewClient(rpID, rpName, rpIcon string) *WebAuthNClient {
 
 // SetDefaultCOSE sets COSECredentialParameters to ES256 and RS256.
 func (c *WebAuthNClient) SetDefaultCOSE() {
-	c.COSECredentialParameters = []*share.COSECredentialParameter{
+	c.COSECredentialParameters = []*share.RawCOSECredentialParameter{
 		{
 			Version:        define.WebAuthNCOSECredentialParameterCurrentVersion,
 			CredentialType: windows.StringToUTF16Ptr(define.WebAuthNCredentialTypePublicKey),
@@ -55,7 +53,7 @@ func (c *WebAuthNClient) SetDefaultCOSE() {
 	}
 }
 
-func (c *WebAuthNClient) MakeCredential(user User, origin string, opts *share.AuthenticatorMakeCredentialOptions) (*share.CredentialAttestation, error) {
+func (c *WebAuthNClient) MakeCredential(user User, origin string, opts *share.RawAuthenticatorMakeCredentialOptions) (*share.RawCredentialAttestation, error) {
 	if len(c.COSECredentialParameters) == 0 {
 		c.SetDefaultCOSE()
 	}
@@ -80,7 +78,7 @@ func (c *WebAuthNClient) MakeCredential(user User, origin string, opts *share.Au
 	opts.CancellationID = &cancelID
 	return raw.AuthenticatorMakeCredential(utils.GetConsoleWindows(),
 		&c.RPInfo,
-		&share.UserInfo{
+		&share.RawUserInfo{
 			Version:     define.WebAuthNUserEntityInformationCurrentVersion,
 			IDLen:       uint32(len(user.GetID())),
 			IDPtr:       &user.GetID()[0],
@@ -88,7 +86,7 @@ func (c *WebAuthNClient) MakeCredential(user User, origin string, opts *share.Au
 			Icon:        windows.StringToUTF16Ptr(user.GetIcon()),
 			DisplayName: windows.StringToUTF16Ptr(user.GetDisplayName()),
 		},
-		&share.COSECredentialParameters{
+		&share.RawCOSECredentialParameters{
 			CredentialParametersLen: uint32(len(c.COSECredentialParameters)),
 			CredentialParameters:    c.COSECredentialParameters[0],
 		},
@@ -114,15 +112,11 @@ func (c *WebAuthNClient) GetAssertion(origin string, opts *share.AuthenticatorGe
 }
 
 func (c *WebAuthNClient) GetPlatformCredentialList() ([]*share.CredentialDetails, error) {
-	res, err := raw.GetPlatformCredentialList(
-		&share.GetCredentialsOptions{
+	return raw.GetPlatformCredentialList(
+		&share.RawGetCredentialsOptions{
 			Version:              define.WebAuthNGetCredentialsOptionsCurrentVersion,
 			RPID:                 c.RPInfo.ID,
 			BrowserInPrivateMode: false,
 		},
 	)
-	if err != nil {
-		return nil, err
-	}
-	return unsafe.Slice(res.CredentialDetailsPtr, int(res.CredentialDetailsLen)), nil
 }

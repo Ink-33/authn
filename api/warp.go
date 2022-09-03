@@ -9,15 +9,15 @@ import (
 )
 
 // NewMakeCerdOpts returns an AuthenticatorMakeCredentialOptions struct pointer whih default value.
-func NewMakeCerdOpts() *share.AuthenticatorMakeCredentialOptions {
-	return &share.AuthenticatorMakeCredentialOptions{
+func NewMakeCerdOpts() *share.RawAuthenticatorMakeCredentialOptions {
+	return &share.RawAuthenticatorMakeCredentialOptions{
 		Version:             define.WebAuthNAuthenticatorMakeCredentialOptionsCurrentVersion,
 		TimeoutMilliseconds: 60000,
-		CredentialList: share.Credentials{
+		CredentialList: share.RawCredentials{
 			CredentialsLen: 0,
 			CredentialsPtr: nil,
 		},
-		Extensions: share.Extensions{
+		Extensions: share.RawExtensions{
 			ExtensionsLen: 0,
 			ExtensionsPrt: nil,
 		},
@@ -27,7 +27,7 @@ func NewMakeCerdOpts() *share.AuthenticatorMakeCredentialOptions {
 		AttestationConveyancePreference: define.WebAuthNAttestationConveyancePreferenceNone,
 		Flags:                           0,
 		CancellationID:                  nil,
-		ExcludeCredentialList: &share.CredentialList{
+		ExcludeCredentialList: &share.RawCredentialList{
 			Credentials:    0,
 			CredentialsPtr: nil,
 		},
@@ -43,11 +43,11 @@ func NewGetAssertionOptions() *share.AuthenticatorGetAssertionOptions {
 	return &share.AuthenticatorGetAssertionOptions{
 		Version:             define.WebAuthNAuthenticatorGetAssertionOptionsCurrentVersion,
 		TimeoutMilliseconds: 60000,
-		CredentialList: share.Credentials{
+		CredentialList: share.RawCredentials{
 			CredentialsLen: 0,
 			CredentialsPtr: nil,
 		},
-		Extensions: share.Extensions{
+		Extensions: share.RawExtensions{
 			ExtensionsLen: 0,
 			ExtensionsPrt: nil,
 		},
@@ -57,7 +57,7 @@ func NewGetAssertionOptions() *share.AuthenticatorGetAssertionOptions {
 		U2fAppID:                    nil,
 		IsU2fAppIDUsed:              nil,
 		CancellationID:              nil,
-		AllowCredentialList: &share.CredentialList{
+		AllowCredentialList: &share.RawCredentialList{
 			Credentials:    0,
 			CredentialsPtr: nil,
 		},
@@ -69,8 +69,8 @@ func NewGetAssertionOptions() *share.AuthenticatorGetAssertionOptions {
 }
 
 // CreateClientData ...
-func CreateClientData(action, origin, challenge, HashAlgID string) (*share.CollectedClientData, error) {
-	cd := share.CollectedClient{
+func CreateClientData(action, origin, challenge, HashAlgID string) (*share.RawCollectedClientData, error) {
+	cd := share.RawCollectedClient{
 		Type:      action,
 		Challenge: challenge,
 		Origin:    origin,
@@ -79,7 +79,7 @@ func CreateClientData(action, origin, challenge, HashAlgID string) (*share.Colle
 	if err != nil {
 		return nil, err
 	}
-	return &share.CollectedClientData{
+	return &share.RawCollectedClientData{
 		Version:           define.WebAuthNClientDataCurrentVersion,
 		ClientDataJSONLen: uint32(len(cdjson)),
 		ClientDataJSONPtr: &cdjson[0],
