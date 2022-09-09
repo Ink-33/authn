@@ -2,8 +2,8 @@ package share
 
 import "golang.org/x/sys/windows"
 
-// AuthenticatorGetAssertionOptions ...
-type AuthenticatorGetAssertionOptions struct {
+// RawAuthenticatorGetAssertionOptions ...
+type RawAuthenticatorGetAssertionOptions struct {
 	// Version of this structure, to allow for modifications in the future.
 	Version uint32 // DWORD
 

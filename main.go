@@ -4,11 +4,9 @@ import (
 	"crypto/rand"
 	"encoding/base64"
 	"fmt"
-	"unsafe"
 
 	"github.com/Ink-33/authn/api"
 	"github.com/Ink-33/authn/api/raw"
-	"github.com/Ink-33/authn/api/utils"
 	"github.com/fxamacker/cbor/v2"
 )
 
@@ -72,8 +70,8 @@ func main1(c *api.WebAuthNClient) {
 		return
 	}
 	fmt.Printf("a.Version: %v\n", a.Version)
-	fmt.Printf("a.FormatType: %v\n", utils.UTF16PtrtoString(a.FormatType))
-	fmt.Printf("a.AttestationDecodeType: %v\n", a.AttestationDecodeType)
+	fmt.Printf("a.FormatType: %v\n", a.FormatType)
+	fmt.Printf("a.AttestationDecodeType: %v\n", a.AttestationDecode)
 	fmt.Printf("a.UsedTransport: %v\n", a.UsedTransport)
 	fmt.Printf("a.EpAtt: %v\n", a.EpAtt)
 	fmt.Printf("a.LargeBlobSupported: %v\n", a.LargeBlobSupported)
@@ -82,10 +80,10 @@ func main1(c *api.WebAuthNClient) {
 	fmt.Printf("a.Extensions: %v\n", a.Extensions)
 
 	fmt.Printf("AuthenticatorData: %v\n",
-		base64.RawStdEncoding.EncodeToString(unsafe.Slice(a.AuthenticatorDataPtr, a.AuthenticatorDataLen)))
+		base64.RawStdEncoding.EncodeToString(a.AuthenticatorData))
 
 	atM := map[string]any{}
-	err = cbor.Unmarshal(unsafe.Slice(a.AttestationPtr, a.AttestationLen), &atM)
+	err = cbor.Unmarshal(a.Attestation, &atM)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -93,7 +91,7 @@ func main1(c *api.WebAuthNClient) {
 	fmt.Printf("Attestation: %v\n", atM)
 
 	atoM := map[string]any{}
-	err = cbor.Unmarshal(unsafe.Slice(a.AttestationObjectPtr, a.AttestationObjectLen), &atoM)
+	err = cbor.Unmarshal(a.AttestationObject, &atoM)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -101,7 +99,7 @@ func main1(c *api.WebAuthNClient) {
 	fmt.Printf("AttestationObject: %v\n", atoM)
 
 	fmt.Printf("CredentialID: %v\n",
-		base64.RawURLEncoding.EncodeToString(unsafe.Slice(a.CredentialIDPtr, a.CredentialIDLen)))
+		base64.RawURLEncoding.EncodeToString(a.CredentialID))
 }
 
 type testUser struct {

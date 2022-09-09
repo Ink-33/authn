@@ -49,6 +49,8 @@ const (
 
 	WebAuthNCredentialEXCurrentVersion = 1
 
+	WebAuthNCommonAttestationCurrentVersion = 1
+
 	WebAuthNGetCredentialsOptionsVersion1       = 1
 	WebAuthNGetCredentialsOptionsCurrentVersion = WebAuthNGetCredentialsOptionsVersion1
 

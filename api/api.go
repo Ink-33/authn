@@ -53,7 +53,7 @@ func (c *WebAuthNClient) SetDefaultCOSE() {
 	}
 }
 
-func (c *WebAuthNClient) MakeCredential(user User, origin string, opts *share.RawAuthenticatorMakeCredentialOptions) (*share.RawCredentialAttestation, error) {
+func (c *WebAuthNClient) MakeCredential(user User, origin string, opts *share.RawAuthenticatorMakeCredentialOptions) (*share.CredentialAttestation, error) {
 	if len(c.COSECredentialParameters) == 0 {
 		c.SetDefaultCOSE()
 	}
@@ -94,7 +94,7 @@ func (c *WebAuthNClient) MakeCredential(user User, origin string, opts *share.Ra
 		opts)
 }
 
-func (c *WebAuthNClient) GetAssertion(origin string, opts *share.AuthenticatorGetAssertionOptions) (*share.Assertion, error) {
+func (c *WebAuthNClient) GetAssertion(origin string, opts *share.RawAuthenticatorGetAssertionOptions) (*share.Assertion, error) {
 	chanlleng, err := utils.CreateChallenge(c.challengeLength)
 	if err != nil {
 		return nil, err

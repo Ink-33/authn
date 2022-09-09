@@ -1,8 +1,6 @@
 package share
 
 import (
-	"unsafe"
-
 	"github.com/Ink-33/authn/api/utils"
 )
 
@@ -51,7 +49,7 @@ func (c *RawCredential) DeRaw() *Credential {
 	}
 	return &Credential{
 		Version:        c.Version,
-		ID:             unsafe.Slice(c.IDPtr, c.IDLen),
+		ID:             utils.BytesBuilder(c.IDPtr, c.IDLen),
 		CredentialType: utils.UTF16PtrtoString(c.CredentialType),
 	}
 }

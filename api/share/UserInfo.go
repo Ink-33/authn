@@ -1,8 +1,6 @@
 package share
 
 import (
-	"unsafe"
-
 	"github.com/Ink-33/authn/api/utils"
 )
 
@@ -56,7 +54,7 @@ func (c *RawUserInfo) DeRaw() *UserInfo {
 	}
 	return &UserInfo{
 		Version:     c.Version,
-		ID:          unsafe.Slice(c.IDPtr, c.IDLen),
+		ID:          utils.BytesBuilder(c.IDPtr, c.IDLen),
 		Name:        utils.UTF16PtrtoString(c.Name),
 		Icon:        utils.UTF16PtrtoString(c.Icon),
 		DisplayName: utils.UTF16PtrtoString(c.DisplayName),

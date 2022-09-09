@@ -1,6 +1,10 @@
 package share
 
-import "unsafe"
+import (
+	"unsafe"
+
+	"github.com/Ink-33/authn/api/utils"
+)
 
 // RawCredentialDetails is the Credential Information for WebAuthNGetPlatformCredentialList API
 //
@@ -57,7 +61,7 @@ func (c *RawCredentialDetails) DeRaw() *CredentialDetails {
 	}
 	return &CredentialDetails{
 		Version:         c.Version,
-		CredentialID:    unsafe.Slice(c.CredentialIDPtr, c.CredentialIDLen),
+		CredentialID:    utils.BytesBuilder(c.CredentialIDPtr, c.CredentialIDLen),
 		RPInformation:   c.RPInformation.DeRaw(),
 		UserInformation: c.UserInformation.DeRaw(),
 		Removable:       c.Removable,

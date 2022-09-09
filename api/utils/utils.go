@@ -45,7 +45,7 @@ func S2B(s string) (b []byte) {
 // make guessing them infeasible. Challenges SHOULD therefore be at least 16 bytes long.
 // See https://w3c.github.io/webauthn/#sctn-cryptographic-challenges
 //
-// Default 32 bytes length will be used if the given length is less than 16 or more than 256
+// # Default 32 bytes length will be used if the given length is less than 16 or more than 256
 //
 // Challenge is encoded in base64.
 func CreateChallenge(len int) (string, error) {
@@ -60,15 +60,18 @@ func CreateChallenge(len int) (string, error) {
 	return base64.RawURLEncoding.EncodeToString(challenge), nil
 }
 
-// BytesBuilder converts PBYTE to go []byte
+// BytesBuilder converts PBYTE to go []byte.
 func BytesBuilder(ptr *byte, len uint32) (buf []byte) {
-	p := (*reflect.SliceHeader)(unsafe.Pointer(&buf))
-	p.Data = uintptr(unsafe.Pointer(ptr))
-	p.Cap = int(len)
-	p.Len = int(len)
-	return
+	if len == 0 {
+		return
+	}
+	buf = make([]byte, len)
+	raw := unsafe.Slice(ptr, len)
+	copy(buf, raw) // make sure it is safe after call free api.
+	return buf
 }
 
+// CreateCancelID returns a new windows guid
 func CreateCancelID() (windows.GUID, error) {
 	return windows.GUIDFromString("{" + uuid.New().String() + "}")
 }

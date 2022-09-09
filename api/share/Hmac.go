@@ -1,6 +1,6 @@
 package share
 
-import "unsafe"
+import "github.com/Ink-33/authn/api/utils"
 
 // RawHMACSecretSalt ...
 //
@@ -53,7 +53,7 @@ func (c *RawHMACSecretSalt) DeRaw() *HMACSecretSalt {
 		return nil
 	}
 	return &HMACSecretSalt{
-		First:  unsafe.Slice(c.FirstPtr, c.FirstLen),
-		Second: unsafe.Slice(c.SecondPtr, c.SecondLen),
+		First:  utils.BytesBuilder(c.FirstPtr, c.FirstLen),
+		Second: utils.BytesBuilder(c.SecondPtr, c.SecondLen),
 	}
 }

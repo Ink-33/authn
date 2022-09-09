@@ -1,6 +1,6 @@
 package share
 
-import "unsafe"
+import "github.com/Ink-33/authn/api/utils"
 
 // RawAssertion is authenticatorGetAssertion output.
 type RawAssertion struct {
@@ -89,12 +89,12 @@ func (c *RawAssertion) DeRaw() *Assertion {
 	}
 	return &Assertion{
 		Version:             c.Version,
-		AuthenticatorData:   unsafe.Slice(c.AuthenticatorDataPtr, c.AuthenticatorDataLen),
-		Signature:           unsafe.Slice(c.SignaturePtr, c.SignatureLen),
+		AuthenticatorData:   utils.BytesBuilder(c.AuthenticatorDataPtr, c.AuthenticatorDataLen),
+		Signature:           utils.BytesBuilder(c.SignaturePtr, c.SignatureLen),
 		Credential:          *c.Credential.DeRaw(),
-		UserID:              unsafe.Slice(c.UserIDPtr, c.UserIDLen),
+		UserID:              utils.BytesBuilder(c.UserIDPtr, c.UserIDLen),
 		Extensions:          c.Extensions,
-		CredLargeBlob:       unsafe.Slice(c.CredLargeBlobPtr, c.CredLargeBlobLen),
+		CredLargeBlob:       utils.BytesBuilder(c.CredLargeBlobPtr, c.CredLargeBlobLen),
 		CredLargeBlobStatus: c.CredLargeBlobStatus,
 		HMACSecret:          c.HMACSecret.DeRaw(),
 	}

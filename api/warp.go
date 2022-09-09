@@ -39,8 +39,8 @@ func NewMakeCerdOpts() *share.RawAuthenticatorMakeCredentialOptions {
 }
 
 // NewGetAssertionOptions returns an AuthenticatorGetAssertionOptions struct pointer whih default value.
-func NewGetAssertionOptions() *share.AuthenticatorGetAssertionOptions {
-	return &share.AuthenticatorGetAssertionOptions{
+func NewGetAssertionOptions() *share.RawAuthenticatorGetAssertionOptions {
+	return &share.RawAuthenticatorGetAssertionOptions{
 		Version:             define.WebAuthNAuthenticatorGetAssertionOptionsCurrentVersion,
 		TimeoutMilliseconds: 60000,
 		CredentialList: share.RawCredentials{
