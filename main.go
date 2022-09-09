@@ -11,8 +11,8 @@ import (
 )
 
 func main() {
-	fmt.Printf("raw.GetAPIVersionNumber(): %v\n", raw.GetAPIVersionNumber())
-	fmt.Printf("raw.IsUserVerifyingPlatformAuthenticatorAvailable(): %v\n", raw.IsUserVerifyingPlatformAuthenticatorAvailable())
+	fmt.Printf("WebAuthN API Version: %v\n", raw.GetAPIVersionNumber())
+	fmt.Printf("Is User Verifying Platform Authenticator Available: %v\n", raw.IsUserVerifyingPlatformAuthenticatorAvailable())
 	c := api.NewClient("go.webauthn.demo.app", "WebAuthN From Golang", "")
 loop:
 	fmt.Println("Select operation:")
