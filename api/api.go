@@ -66,7 +66,7 @@ func (c *WebAuthNClient) MakeCredential(user User, origin string, opts *share.Ra
 		return nil, err
 	}
 	if opts == nil {
-		opts = NewMakeCerdOpts()
+		opts = NewMakeCredOpts()
 	}
 	if c.Timeout != 0 {
 		opts.TimeoutMilliseconds = c.Timeout
@@ -111,12 +111,31 @@ func (c *WebAuthNClient) GetAssertion(origin string, opts *share.RawAuthenticato
 	)
 }
 
-func (c *WebAuthNClient) GetPlatformCredentialList() ([]*share.CredentialDetails, error) {
+// GetPlatformCredentialList gets the list of WebAuthN/FIDO2 credentials currently stored for the user.
+//
+// If rpid is not given, will use client rpid.
+//
+// If rpid is "-", will let this argurement empty when calling win32 api.
+func (c *WebAuthNClient) GetPlatformCredentialList(rpid string) ([]*share.CredentialDetails, error) {
+	rpidu16 := (*uint16)(nil)
+	switch rpid {
+	case "-":
+		rpidu16 = nil
+	case "":
+		rpidu16 = c.RPInfo.ID
+	default:
+		rpidu16 = windows.StringToUTF16Ptr(rpid)
+	}
 	return raw.GetPlatformCredentialList(
 		&share.RawGetCredentialsOptions{
 			Version:              define.WebAuthNGetCredentialsOptionsCurrentVersion,
-			RPID:                 c.RPInfo.ID,
+			RPID:                 rpidu16,
 			BrowserInPrivateMode: false,
 		},
 	)
+}
+
+// DeletePlatformCred removes a Public Key Credential Source stored on a Virtual Authenticator.
+func (c *WebAuthNClient) DeletePlatformCred(cbCred uint32, pbCred *byte) error {
+	return raw.DeletePlatformCred(cbCred, pbCred)
 }

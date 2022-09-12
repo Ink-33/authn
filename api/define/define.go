@@ -120,10 +120,10 @@ const (
 
 // get attestation options
 const (
-	WebAuthNCerdLargeBlobOperationNone   = 0
-	WebAuthNCerdLargeBlobOperationGet    = 1
-	WebAuthNCerdLargeBlobOperationSet    = 2
-	WebAuthNCerdLargeBlobOperationDelete = 3
+	WebAuthNCredLargeBlobOperationNone   = 0
+	WebAuthNCredLargeBlobOperationGet    = 1
+	WebAuthNCredLargeBlobOperationSet    = 2
+	WebAuthNCredLargeBlobOperationDelete = 3
 
 	/*
 	   Information about flags.

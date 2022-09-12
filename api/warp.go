@@ -8,8 +8,8 @@ import (
 	"golang.org/x/sys/windows"
 )
 
-// NewMakeCerdOpts returns an AuthenticatorMakeCredentialOptions struct pointer whih default value.
-func NewMakeCerdOpts() *share.RawAuthenticatorMakeCredentialOptions {
+// NewMakeCredOpts returns an AuthenticatorMakeCredentialOptions struct pointer whih default value.
+func NewMakeCredOpts() *share.RawAuthenticatorMakeCredentialOptions {
 	return &share.RawAuthenticatorMakeCredentialOptions{
 		Version:             define.WebAuthNAuthenticatorMakeCredentialOptionsCurrentVersion,
 		TimeoutMilliseconds: 60000,
@@ -32,7 +32,7 @@ func NewMakeCerdOpts() *share.RawAuthenticatorMakeCredentialOptions {
 			CredentialsPtr: nil,
 		},
 		EnterpriseAttestation: define.WebAuthNEnterpriseAttestationNone,
-		LargeBlobSupport:      define.WebAuthNCerdLargeBlobOperationNone,
+		LargeBlobSupport:      define.WebAuthNCredLargeBlobOperationNone,
 		PreferResidentKey:     false,
 		BrowserInPrivateMode:  false,
 	}
@@ -61,7 +61,7 @@ func NewGetAssertionOptions() *share.RawAuthenticatorGetAssertionOptions {
 			Credentials:    0,
 			CredentialsPtr: nil,
 		},
-		CredLargeBlobOperation: define.WebAuthNCerdLargeBlobOperationNone,
+		CredLargeBlobOperation: define.WebAuthNCredLargeBlobOperationNone,
 		CredLargeBlobLen:       0,
 		CredLargeBlobPtr:       0,
 		HMACSecretSaltValues:   nil,

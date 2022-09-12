@@ -114,7 +114,6 @@ func AuthenticatorGetAssertion(hWnd uintptr,
 		)
 	if res == 0 {
 		defer freeAssertion(raw)
-
 		return raw.DeRaw(), nil
 	}
 	return nil, hresult.HResult(res)
@@ -124,4 +123,17 @@ func AuthenticatorGetAssertion(hWnd uintptr,
 func freeAssertion(assertion *share.RawAssertion) {
 	_, _, _ = webauthn.MustFindProc("WebAuthNFreeAssertion").
 		Call(uintptr(unsafe.Pointer(assertion)))
+}
+
+// DeletePlatformCred removes a Public Key Credential Source stored on a Virtual Authenticator.
+func DeletePlatformCred(cbCred uint32, pbCred *byte) error {
+	proc, err := webauthn.FindProc("WebAuthNDeletePlatformCredential")
+	if err != nil {
+		return err
+	}
+	res, _, _ := proc.Call(uintptr(cbCred), uintptr(unsafe.Pointer(pbCred)))
+	if res == 0 {
+		return nil
+	}
+	return hresult.HResult(res)
 }
