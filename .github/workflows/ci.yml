@@ -1,0 +1,40 @@
+name: CI
+
+on: [push, pull_request, workflow_dispatch]
+
+env:
+  COMMIT_ID: "${{ github.sha }}"
+  PR_PROMPT: "::warning:: Build artifact will not be uploaded due to the workflow is trigged by pull request."
+
+jobs:
+  build:
+    name: Build binary CI
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Go environment
+        uses: actions/setup-go@v3.2.1
+        with:
+          go-version: 1.19
+      - name: Cache downloaded module
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-go-windows-amd64-${{ hashFiles('**/go.sum') }}
+      - name: Build binary file
+        env:
+          GOOS: windows
+          GOARCH: amd64
+          IS_PR: ${{ !!github.head_ref }}
+        run: |
+          export CGO_ENABLED=0
+          export LD_FLAGS="-w -s -X github.com/Ink-33/authn/cmd.Version=${COMMIT_ID::7}"
+          go build -o "output/authn.exe" -trimpath -ldflags "$LD_FLAGS" .
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        if: ${{ !github.head_ref }}
+        with:
+          name: authn.exe
+          path: output/
