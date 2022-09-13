@@ -3,6 +3,9 @@
 package raw
 
 import (
+	"fmt"
+	"os"
+	"time"
 	"unsafe"
 
 	"github.com/Ink-33/authn/api/hresult"
@@ -11,17 +14,27 @@ import (
 	"golang.org/x/sys/windows"
 )
 
-var webauthn = windows.MustLoadDLL("webauthn.dll")
+var webauthn *windows.LazyDLL
+
+func init() {
+	webauthn = windows.NewLazySystemDLL("webauthn.dll")
+	err := webauthn.Load()
+	if err != nil {
+		fmt.Printf("Fatal: Cannot load webauthn.dll. %v", err)
+		time.Sleep(5 * time.Second)
+		os.Exit(1)
+	}
+}
 
 // GetAPIVersionNumber returns supported webauthn version of the current system.
 func GetAPIVersionNumber() uintptr {
-	ver, _, _ := webauthn.MustFindProc("WebAuthNGetApiVersionNumber").Call()
+	ver, _, _ := webauthn.NewProc("WebAuthNGetApiVersionNumber").Call()
 	return ver
 }
 
 // IsUserVerifyingPlatformAuthenticatorAvailable checks if the device owns platform authenticators.
 func IsUserVerifyingPlatformAuthenticatorAvailable() (is bool) {
-	_, _, _ = webauthn.MustFindProc("WebAuthNIsUserVerifyingPlatformAuthenticatorAvailable").
+	_, _, _ = webauthn.NewProc("WebAuthNIsUserVerifyingPlatformAuthenticatorAvailable").
 		Call(uintptr(unsafe.Pointer(&is)))
 	return is
 }
@@ -34,7 +47,7 @@ func AuthenticatorMakeCredential(hWnd uintptr,
 	clientData *share.RawCollectedClientData,
 	options *share.RawAuthenticatorMakeCredentialOptions) (attestation *share.CredentialAttestation, err error) {
 	raw := &share.RawCredentialAttestation{}
-	res, _, _ := webauthn.MustFindProc("WebAuthNAuthenticatorMakeCredential").
+	res, _, _ := webauthn.NewProc("WebAuthNAuthenticatorMakeCredential").
 		Call(
 			hWnd,
 			uintptr(unsafe.Pointer(rpInfo)),
@@ -51,7 +64,7 @@ func AuthenticatorMakeCredential(hWnd uintptr,
 	return nil, hresult.HResult(res)
 }
 func freeCredentialAttestation(attestation *share.RawCredentialAttestation) {
-	_, _, _ = webauthn.MustFindProc("WebAuthNFreeCredentialAttestation").
+	_, _, _ = webauthn.NewProc("WebAuthNFreeCredentialAttestation").
 		Call(uintptr(unsafe.Pointer(attestation)))
 }
 
@@ -70,19 +83,23 @@ func freeCredentialAttestation(attestation *share.RawCredentialAttestation) {
 //	                          HRESULT_FROM_WIN32(ERROR_TIMEOUT)
 //	L"UnknownError"         - All other hr values
 func GetErrorName(hr hresult.HResult) string {
-	msg, _, _ := webauthn.MustFindProc("WebAuthNGetErrorName").Call(uintptr(hr))
+	msg, _, _ := webauthn.NewProc("WebAuthNGetErrorName").
+		Call(uintptr(hr))
 	return utils.UTF16PtrtoString((*uint16)(unsafe.Pointer(msg)))
 }
 
 // GetPlatformCredentialList ...
 func GetPlatformCredentialList(options *share.RawGetCredentialsOptions) (credList []*share.CredentialDetails, err error) {
-	proc, err := webauthn.FindProc("WebAuthNGetPlatformCredentialList")
+	proc := webauthn.NewProc("WebAuthNGetPlatformCredentialList")
+	proc.Find()
 	if err != nil {
 		return nil, err
 	}
 	raw := &share.RawCredentialDetailsList{}
-	res, _, _ := proc.
-		Call(uintptr(unsafe.Pointer(options)), uintptr(unsafe.Pointer(&raw)))
+	res, _, _ := proc.Call(
+		uintptr(unsafe.Pointer(options)),
+		uintptr(unsafe.Pointer(&raw)),
+	)
 	if res == 0 {
 		defer freePlatformCredentialList(raw)
 		return raw.DeRaw(), nil
@@ -92,7 +109,7 @@ func GetPlatformCredentialList(options *share.RawGetCredentialsOptions) (credLis
 
 // freePlatformCredentialList frees the allocation for the WEBAUTHN_CREDENTIAL_DETAILS_LIST.
 func freePlatformCredentialList(list *share.RawCredentialDetailsList) {
-	_, _, _ = webauthn.MustFindProc("WebAuthNFreePlatformCredentialList").
+	_, _, _ = webauthn.NewProc("WebAuthNFreePlatformCredentialList").
 		Call(uintptr(unsafe.Pointer(list)))
 }
 
@@ -104,7 +121,7 @@ func AuthenticatorGetAssertion(hWnd uintptr,
 	clientData *share.RawCollectedClientData,
 	opts *share.RawAuthenticatorGetAssertionOptions) (assertion *share.Assertion, err error) {
 	raw := &share.RawAssertion{}
-	res, _, _ := webauthn.MustFindProc("WebAuthNAuthenticatorGetAssertion").
+	res, _, _ := webauthn.NewProc("WebAuthNAuthenticatorGetAssertion").
 		Call(
 			hWnd,
 			uintptr(unsafe.Pointer(rpID)),
@@ -121,13 +138,14 @@ func AuthenticatorGetAssertion(hWnd uintptr,
 
 // FreeAssertion frees an assertion previously allocated by calling WebAuthNAuthenticatorGetAssertion.
 func freeAssertion(assertion *share.RawAssertion) {
-	_, _, _ = webauthn.MustFindProc("WebAuthNFreeAssertion").
+	_, _, _ = webauthn.NewProc("WebAuthNFreeAssertion").
 		Call(uintptr(unsafe.Pointer(assertion)))
 }
 
 // DeletePlatformCred removes a Public Key Credential Source stored on a Virtual Authenticator.
 func DeletePlatformCred(cbCred uint32, pbCred *byte) error {
-	proc, err := webauthn.FindProc("WebAuthNDeletePlatformCredential")
+	proc := webauthn.NewProc("WebAuthNDeletePlatformCredential")
+	err := proc.Find()
 	if err != nil {
 		return err
 	}
