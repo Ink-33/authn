@@ -10,6 +10,7 @@ import (
 )
 
 func main() {
+	fmt.Printf("Cli tool version: %v\n", cmd.Version)
 	fmt.Printf("WebAuthN API Version: %v\n", raw.GetAPIVersionNumber())
 	fmt.Printf("Is User Verifying Platform Authenticator Available: %v\n", raw.IsUserVerifyingPlatformAuthenticatorAvailable())
 	c := api.NewClient("go.webauthn.demo.app", "WebAuthN From Golang", "")

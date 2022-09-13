@@ -9,6 +9,8 @@ import (
 	"github.com/Ink-33/authn/api/share"
 )
 
+var Version = "dev"
+
 type Action struct {
 	Desp     string
 	Function func(*api.WebAuthNClient) error
