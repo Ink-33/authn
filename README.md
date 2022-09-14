@@ -16,13 +16,20 @@ In this demo, we use `go.webauthn.demo.app` as [Relying Party ID](https://w3c.gi
 
 ``` 
 PS C:\Users\ink33\authn> .\authn.exe
+Cli tool version: dev
 WebAuthN API Version: 4
 Is User Verifying Platform Authenticator Available: true
+
 Select operation:
-1: Make Credential
-2: Get Assertion
-3: Get Platform Credential List
-0: Exit
+
+(1): Make Credential
+(2): Get Assertion
+(3): Get Platform Credential List
+(4): Delete Platform Credential
+
+(0): Exit
+
+>
 ```
 
 New function will be added soon.
