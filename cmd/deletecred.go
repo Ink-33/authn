@@ -7,7 +7,7 @@ import (
 	"sync"
 
 	"github.com/Ink-33/authn/api"
-	"github.com/Ink-33/authn/api/utils"
+	"github.com/Ink-33/authn/interact"
 )
 
 type cred struct {
@@ -17,22 +17,22 @@ type cred struct {
 }
 
 func DeletePlatformCred(c *api.WebAuthNClient) error {
-	fmt.Println("Select sub operation:")
-	fmt.Println("1:", "Purge all credentials related with this cli tool")
-	fmt.Println("2:", "Choose credentials to delete")
-	fmt.Println("0:", "Cancel")
-
-	op := utils.ScanInputAndCheck()
-
-	switch op {
-	case 0:
-		return nil
-	case 1:
-		return purge(c)
-	case 2:
-		return choose()
+	choices := interact.Choose{
+		Title: "Select sub operation:",
+		Choices: []interact.Choice{
+			interact.NewChoice(
+				"Purge all credentials related with this cli tool",
+				func() error { return interact.NewToPreviouswithErr(purge(c)) },
+			),
+			interact.NewChoice(
+				"Choose credentials to delete",
+				func() error { return interact.NewToPreviouswithErr(choose(c)) },
+			),
+		},
+		Loop:                 true,
+		ToPreviousChooseDesc: "Cancel",
 	}
-	return nil
+	return choices.Do()
 }
 
 func purge(c *api.WebAuthNClient) error {
@@ -72,7 +72,7 @@ func purge(c *api.WebAuthNClient) error {
 	return nil
 }
 
-func choose() error {
+func choose(c *api.WebAuthNClient) error {
 	return fmt.Errorf("TODO")
 }
 

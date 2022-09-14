@@ -3,9 +3,7 @@ package utils
 import (
 	"crypto/rand"
 	"encoding/base64"
-	"fmt"
 	"reflect"
-	"strconv"
 	"unsafe"
 
 	"github.com/google/uuid"
@@ -76,26 +74,4 @@ func BytesBuilder(ptr *byte, len uint32) (buf []byte) {
 // CreateCancelID returns a new windows guid
 func CreateCancelID() (windows.GUID, error) {
 	return windows.GUIDFromString("{" + uuid.New().String() + "}")
-}
-
-// ScanInputAndCheck scans user input with check.
-//
-// It returns 0 if input is not a number or is less than 0.
-//
-// If nothing is input, return -1
-func ScanInputAndCheck() int {
-	in := ""
-
-	fmt.Scanln(&in)
-	if in == "" {
-		return -1
-	}
-	op, err := strconv.Atoi(in)
-	if err != nil {
-		return 0
-	}
-	if op < 0 {
-		return 0
-	}
-	return op
 }
