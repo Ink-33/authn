@@ -36,7 +36,7 @@ func printCallAPI() {
 
 func printCredList(list []*share.CredentialDetails) {
 	for i, v := range list {
-		fmt.Printf("[%v]\tCredID:\t%v\n\tUser:\t%v[%v]\n\tRP:\t%v[%v]\n\tRemovable:\t%v\n",
+		fmt.Printf("[%v]\tCredID:\t%v\n\tUser:\t%v[%v]\n\tRP:\t%v[%v]\n\tRemovable:\t%v\n\n",
 			i,
 			base64.RawURLEncoding.EncodeToString(v.CredentialID),
 			v.UserInformation.Name,
