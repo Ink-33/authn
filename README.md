@@ -1,18 +1,18 @@
 # authn 
 
-WIP
+> WIP
 
-A Windows WebAuthN api warpper. Provide both friendly api and low-level api. 
+A Windows WebAuthN API wrapper with both human-friendly and low-level API provided. 
 
 Target `WebAuthN API` version: 4 
 
 ## Usage
 
-We provide a simple cli demo to let you try the basic functions of the `WebAuthN`.
+Here is a simple cli demo showing some basic functions of `WebAuthN`.
+ 
+[Relying Party ID](https://w3c.github.io/webauthn/#rp-id) `go.webauthn.demo.app` will be used in this demo.
 
-In this demo, we use `go.webauthn.demo.app` as [Relying Party ID](https://w3c.github.io/webauthn/#rp-id).
-
-**Note**: No information will be uploaded. All operation is processing locally.
+**Note**: No information will be uploaded. All operations are processed locally.
 
 ``` 
 PS C:\Users\ink33\authn> .\authn.exe
@@ -32,4 +32,4 @@ Select operation:
 >
 ```
 
-New function will be added soon.
+New functions will coming soon.
