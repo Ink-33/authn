@@ -5,7 +5,7 @@ import (
 )
 
 // ChoiceHanlder defines function signature of a vaild choice function.
-type ChoiceHanlder func() error
+type ChoiceHanlder func() (func(), error)
 
 // ToPrevious implements error interface that let app step out current choose loop.
 type ToPrevious struct {
@@ -33,12 +33,12 @@ func (c *DefaultChoice) Desc() string {
 }
 
 // Run the choose.
-func (c *DefaultChoice) Run() error {
+func (c *DefaultChoice) Run() (func(), error) {
 	return c.Function()
 }
 
 // NewChoice returns a Choice node.
-func NewChoice(desc string, function func() error) Choice {
+func NewChoice(desc string, function func() (func(), error)) Choice {
 	return &DefaultChoice{
 		Description: desc,
 		Function:    function,
@@ -50,7 +50,7 @@ func NewChoice(desc string, function func() error) Choice {
 // This interface might be extended in the future.
 type Choice interface {
 	Desc() string
-	Run() error
+	Run() (output func(), err error)
 }
 
 // Choose defines essential fields to let this interaction work.
@@ -69,9 +69,15 @@ type Choose struct {
 // ToClosure warps the Choose interaction to a ChoiceHanlder.
 // It can be used to create a nesting choose interaction.
 func (c *Choose) ToClosure() ChoiceHanlder {
-	return func() error {
+	return func() (func(), error) {
+		var msg func()
 		for {
-			fmt.Printf("\n%v\n\n", c.Title)
+			fmt.Printf("\033[2J")
+			fmt.Printf("\033[H")
+			if msg != nil {
+				msg()
+			}
+			fmt.Printf("%v\n\n", c.Title)
 			for i := range c.Choices {
 				fmt.Printf("(%v): %v\n", i+1, c.Choices[i].Desc())
 			}
@@ -80,31 +86,32 @@ func (c *Choose) ToClosure() ChoiceHanlder {
 
 			op := ScanInputAndCheck()
 			if op > len(c.Choices) || op < 0 {
-				fmt.Println("Invaild input")
+				msg = func() { fmt.Printf("Invaild input\n") }
 				continue
 			}
 			if op == 0 {
 				break
 			}
-			err := c.Choices[op-1].Run()
+			var err error
+			msg, err = c.Choices[op-1].Run()
 
 			if c.Loop {
 				if err != nil {
 					if warp, ok := err.(*ToPrevious); ok {
-						return warp.Err
+						return msg, warp.Err
 					}
-					fmt.Printf("Err: %v\n", err)
+					msg = func() { fmt.Printf("Err: %v\n", err) }
 				}
 				continue
 			}
 			break
 		}
-		return nil
+		return nil, nil
 	}
 }
 
 // Do the interaction.
-func (c *Choose) Do() error {
+func (c *Choose) Do() (func(), error) {
 	if c.ToPreviousChooseDesc == "" {
 		c.ToPreviousChooseDesc = "Exit"
 	}

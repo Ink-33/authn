@@ -7,15 +7,15 @@ import (
 	"github.com/Ink-33/authn/api"
 )
 
-func GetAssertion(c *api.WebAuthNClient) error {
+func GetAssertion(c *api.WebAuthNClient) (func(), error) {
 	id := make([]byte, 32)
 	_, _ = rand.Read(id)
-	
+
 	printCallAPI()
 	b, err := c.GetAssertion("local://demo.app", nil)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	fmt.Printf("b: %v\n", b)
-	return nil
+
+	return func() { fmt.Printf("b: %v\n", b) }, nil
 }

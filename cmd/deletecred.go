@@ -16,17 +16,17 @@ type cred struct {
 	b64Cred string
 }
 
-func DeletePlatformCred(c *api.WebAuthNClient) error {
+func DeletePlatformCred(c *api.WebAuthNClient) (func(), error) {
 	choices := interact.Choose{
 		Title: "Select sub operation:",
 		Choices: []interact.Choice{
 			interact.NewChoice(
 				"Purge all credentials related with this cli tool",
-				func() error { return interact.NewToPreviouswithErr(purge(c)) },
+				func() (func(), error) { msg, err := purge(c); return msg, interact.NewToPreviouswithErr(err) },
 			),
 			interact.NewChoice(
 				"Choose credentials to delete",
-				func() error { return interact.NewToPreviouswithErr(choose(c)) },
+				func() (func(), error) { msg, err := choose(c); return msg, interact.NewToPreviouswithErr(err) },
 			),
 		},
 		Loop:                 true,
@@ -35,20 +35,18 @@ func DeletePlatformCred(c *api.WebAuthNClient) error {
 	return choices.Do()
 }
 
-func purge(c *api.WebAuthNClient) error {
+func purge(c *api.WebAuthNClient) (func(), error) {
 	printCallAPI()
 	list, err := c.GetPlatformCredentialList("")
 	if err != nil {
 		if err.Error() == "NteNotFound" {
-			fmt.Println("Nothing to do ...")
-			return nil
+			return func() { fmt.Println("Nothing to do ...") }, nil
 		}
-		return err
+		return nil, err
 	}
 
 	if len(list) == 0 {
-		fmt.Println("Nothing to do...")
-		return nil
+		return func() { fmt.Println("Nothing to do ...") }, nil
 	}
 
 	printCredList(list)
@@ -57,7 +55,7 @@ func purge(c *api.WebAuthNClient) error {
 	fmt.Scanln(&q)
 
 	if strings.ToLower(q) != "y" {
-		return fmt.Errorf("Cancelled")
+		return nil, fmt.Errorf("Cancelled")
 	}
 
 	deletelist := make([]cred, len(list))
@@ -69,11 +67,11 @@ func purge(c *api.WebAuthNClient) error {
 		}
 	}
 	delete(c, deletelist)
-	return nil
+	return func() { fmt.Println("All done") }, nil
 }
 
-func choose(c *api.WebAuthNClient) error {
-	return fmt.Errorf("TODO")
+func choose(c *api.WebAuthNClient) (func(), error) {
+	return nil, fmt.Errorf("TODO")
 }
 
 func delete(c *api.WebAuthNClient, list []cred) {
@@ -98,5 +96,4 @@ func delete(c *api.WebAuthNClient, list []cred) {
 		}(i)
 	}
 	wg.Wait()
-	fmt.Println("All done")
 }

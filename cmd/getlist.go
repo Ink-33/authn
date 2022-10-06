@@ -4,12 +4,12 @@ import (
 	"github.com/Ink-33/authn/api"
 )
 
-func GetPlatformCredList(c *api.WebAuthNClient) error {
+func GetPlatformCredList(c *api.WebAuthNClient) (func(), error) {
 	printCallAPI()
 	res, err := c.GetPlatformCredentialList("-")
 	if err != nil {
-		return err
+		return nil, err
 	}
-	printCredList(res)
-	return nil
+
+	return func() { printCredList(res) }, nil
 }

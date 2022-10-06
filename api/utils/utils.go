@@ -10,11 +10,11 @@ import (
 	"golang.org/x/sys/windows"
 )
 
-var kernel32 = windows.MustLoadDLL("Kernel32.dll")
+var kernel32 = windows.NewLazySystemDLL("Kernel32.dll")
 
 // GetConsoleWindows retrieves the window handle used by the console associated with the calling process.
 func GetConsoleWindows() (hWnd uintptr) {
-	hWnd, _, _ = kernel32.MustFindProc("GetConsoleWindow").Call()
+	hWnd, _, _ = kernel32.NewProc("GetConsoleWindow").Call()
 	return
 }
 

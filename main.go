@@ -20,24 +20,24 @@ func main() {
 		Choices: []interact.Choice{
 			interact.NewChoice(
 				"Make Credential",
-				func() error { return cmd.MakeCred(c) },
+				func() (func(), error) { return cmd.MakeCred(c) },
 			),
 			interact.NewChoice(
 				"Get Assertion",
-				func() error { return cmd.GetAssertion(c) },
+				func() (func(), error) { return cmd.GetAssertion(c) },
 			),
 			interact.NewChoice(
 				"Get Platform Credential List",
-				func() error { return cmd.GetPlatformCredList(c) },
+				func() (func(), error) { return cmd.GetPlatformCredList(c) },
 			),
 			interact.NewChoice(
 				"Delete Platform Credential",
-				func() error { return cmd.DeletePlatformCred(c) },
+				func() (func(), error) { return cmd.DeletePlatformCred(c) },
 			),
 		},
 		Loop: true,
 	}
-	err := choices.Do()
+	_, err := choices.Do()
 	if err != nil {
 		panic(err)
 	}
