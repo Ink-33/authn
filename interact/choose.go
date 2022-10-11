@@ -71,9 +71,11 @@ type Choose struct {
 func (c *Choose) ToClosure() ChoiceHanlder {
 	return func() (func(), error) {
 		var msg func()
-		for {
-			fmt.Printf("\033[2J")
-			fmt.Printf("\033[H")
+		for i := 0; ; i++ {
+			if i != 0 {
+				fmt.Printf("\033[2J")
+				fmt.Printf("\033[H")
+			}
 			if msg != nil {
 				msg()
 			}

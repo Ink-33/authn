@@ -11,6 +11,7 @@ import (
 )
 
 var kernel32 = windows.NewLazySystemDLL("Kernel32.dll")
+var user32 = windows.NewLazySystemDLL("User32.dll")
 
 // GetConsoleWindows retrieves the window handle used by the console associated with the calling process.
 func GetConsoleWindows() (hWnd uintptr) {
