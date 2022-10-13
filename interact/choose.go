@@ -77,7 +77,9 @@ func (c *Choose) ToClosure() ChoiceHanlder {
 				fmt.Printf("\033[H")
 			}
 			if msg != nil {
+				fmt.Printf("Output:\n\n")
 				msg()
+				fmt.Println()
 			}
 			fmt.Printf("%v\n\n", c.Title)
 			for i := range c.Choices {

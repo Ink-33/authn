@@ -79,7 +79,7 @@ type CredentialAttestation struct {
 	FormatType string // PCWSTR pwszFormatType
 
 	// Authenticator data that was created for this credential.
-	AuthenticatorData []byte // PBYTE              pbAuthenticatorData
+	AuthenticatorData *AuthenticatorData // PBYTE              pbAuthenticatorData
 
 	//Encoded CBOR attestation information
 	Attestation []byte // PBYTE              pbAttestation
@@ -133,9 +133,14 @@ func (c *RawCredentialAttestation) DeRaw() *CredentialAttestation {
 		decode = (*RawCommonAttestation)(unsafe.Pointer(c.AttestationDecode)).DeRaw()
 	}
 	return &CredentialAttestation{
-		Version:            c.Version,
-		FormatType:         utils.UTF16PtrtoString(c.FormatType),
-		AuthenticatorData:  utils.BytesBuilder(c.AuthenticatorDataPtr, c.AuthenticatorDataLen),
+		Version:    c.Version,
+		FormatType: utils.UTF16PtrtoString(c.FormatType),
+		AuthenticatorData: func() *AuthenticatorData {
+			d, _ := ParseAuthenticatorData(
+				utils.BytesBuilder(c.AuthenticatorDataPtr, c.AuthenticatorDataLen),
+			)
+			return d
+		}(),
 		Attestation:        utils.BytesBuilder(c.AttestationPtr, c.AttestationLen),
 		AttestationDecode:  decode,
 		AttestationObject:  utils.BytesBuilder(c.AttestationObjectPtr, c.AttestationObjectLen),

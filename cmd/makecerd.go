@@ -6,7 +6,6 @@ import (
 	"fmt"
 
 	"github.com/Ink-33/authn/api"
-	"github.com/fxamacker/cbor/v2"
 )
 
 func MakeCred(c *api.WebAuthNClient) (func(), error) {
@@ -21,37 +20,53 @@ func MakeCred(c *api.WebAuthNClient) (func(), error) {
 	}
 
 	p := func() {
-		fmt.Printf("a.Version: %v\n", a.Version)
-		fmt.Printf("a.FormatType: %v\n", a.FormatType)
-		fmt.Printf("a.AttestationDecodeType: %v\n", a.AttestationDecode)
-		fmt.Printf("a.UsedTransport: %v\n", a.UsedTransport)
-		fmt.Printf("a.EpAtt: %v\n", a.EpAtt)
-		fmt.Printf("a.LargeBlobSupported: %v\n", a.LargeBlobSupported)
-		fmt.Printf("a.ResidentKey: %v\n", a.ResidentKey)
+		// fmt.Printf("Version: %v\n", a.Version)
+		// fmt.Printf("FormatType: %v\n", a.FormatType)
+		// fmt.Printf("AttestationDecodeType: %v\n", a.AttestationDecode)
+		// fmt.Printf("UsedTransport: %v\n", a.UsedTransport)
+		// fmt.Printf("EpAtt: %v\n", a.EpAtt)
+		// fmt.Printf("LargeBlobSupported: %v\n", a.LargeBlobSupported)
+		// fmt.Printf("ResidentKey: %v\n", a.ResidentKey)
 
-		fmt.Printf("a.Extensions: %v\n", a.Extensions)
+		// fmt.Printf("Extensions: %v\n", a.Extensions)
 
-		fmt.Printf("AuthenticatorData: %v\n",
-			base64.RawStdEncoding.EncodeToString(a.AuthenticatorData))
+		fmt.Printf("RPID Hash: %v\n",
+			base64.RawURLEncoding.EncodeToString(a.AuthenticatorData.RPIDHash))
 
-		atM := map[string]any{}
-		err = cbor.Unmarshal(a.Attestation, &atM)
-		if err != nil {
-			fmt.Printf("Err: %v\n", err)
-			return
-		}
-		fmt.Printf("Attestation: %v\n", atM)
+		fmt.Printf("User Present: %v\n", a.AuthenticatorData.Flags.UserPresent)
+		fmt.Printf("RFU1: %v\n", a.AuthenticatorData.Flags.RFU1)
+		fmt.Printf("User Verified: %v\n", a.AuthenticatorData.Flags.UserVerified)
+		fmt.Printf("Backup Eligibility: %v\n", a.AuthenticatorData.Flags.BackupEligibility)
+		fmt.Printf("Backup State: %v\n", a.AuthenticatorData.Flags.BackupState)
+		fmt.Printf("RFU2: %v\n", a.AuthenticatorData.Flags.RFU2)
+		fmt.Printf("Attested credential data included: %v\n", a.AuthenticatorData.Flags.AttestedCredentialData)
+		fmt.Printf("Extension data included: %v\n", a.AuthenticatorData.Flags.ExtensionData)
 
-		atoM := map[string]any{}
-		err = cbor.Unmarshal(a.AttestationObject, &atoM)
-		if err != nil {
-			fmt.Printf("Err: %v\n", err)
-			return
-		}
-		fmt.Printf("AttestationObject: %v\n", atoM)
+		fmt.Printf("Sign Counter: %v\n", a.AuthenticatorData.SignCounter)
 
-		fmt.Printf("CredentialID: %v\n",
-			base64.RawURLEncoding.EncodeToString(a.CredentialID))
+		fmt.Printf("AAGUID: %v\n",
+			base64.RawURLEncoding.EncodeToString(a.AuthenticatorData.AttestedCredentialData.AAGUID))
+
+		fmt.Printf("CredentialID:%v\n",
+			base64.RawURLEncoding.EncodeToString(a.AuthenticatorData.AttestedCredentialData.CredentialID))
+
+		fmt.Printf("COSE: %v\n", a.AuthenticatorData.AttestedCredentialData.CredentialPublicKey)
+		// atM := map[string]any{}
+		// err = cbor.Unmarshal(a.Attestation, &atM)
+		// if err != nil {
+		// 	fmt.Printf("Err: %v\n", err)
+		// 	return
+		// }
+		// fmt.Printf("Attestation: %v\n", atM)
+
+		// atoM := map[string]any{}
+		// err = cbor.Unmarshal(a.AttestationObject, &atoM)
+		// if err != nil {
+		// 	fmt.Printf("Err: %v\n", err)
+		// 	return
+		// }
+		// fmt.Printf("AttestationObject: %v\n", atoM)
+
 	}
 	return p, nil
 }

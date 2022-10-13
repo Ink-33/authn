@@ -54,7 +54,7 @@ type Assertion struct {
 	Version uint32
 
 	// Authenticator data that was created for this assertion.
-	AuthenticatorData []byte
+	AuthenticatorData *AuthenticatorData
 
 	// Signature that was generated for this assertion.
 	Signature []byte
@@ -88,8 +88,13 @@ func (c *RawAssertion) DeRaw() *Assertion {
 		return nil
 	}
 	return &Assertion{
-		Version:             c.Version,
-		AuthenticatorData:   utils.BytesBuilder(c.AuthenticatorDataPtr, c.AuthenticatorDataLen),
+		Version: c.Version,
+		AuthenticatorData: func() *AuthenticatorData {
+			d, _ := ParseAuthenticatorData(
+				utils.BytesBuilder(c.AuthenticatorDataPtr, c.AuthenticatorDataLen),
+			)
+			return d
+		}(),
 		Signature:           utils.BytesBuilder(c.SignaturePtr, c.SignatureLen),
 		Credential:          *c.Credential.DeRaw(),
 		UserID:              utils.BytesBuilder(c.UserIDPtr, c.UserIDLen),
