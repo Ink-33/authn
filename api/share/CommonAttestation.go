@@ -15,7 +15,7 @@ type RawCommonAttestation struct {
 	//
 	// The following won't be set for "fido-u2f" which assumes "ES256".
 	AlgString *uint16 // PCWSTR pwszAlg;
-	Alg       int64   // LONG lAlg;      // COSE algorithm
+	Alg       int32   // LONG lAlg;      // COSE algorithm
 
 	// Signature that was generated for this attestation.
 	SignatureLen uint32 // DWORD cbSignature;
@@ -47,7 +47,7 @@ type CommonAttestation struct {
 	//
 	// The following won't be set for "fido-u2f" which assumes "ES256".
 	AlgString string // PCWSTR pwszAlg;
-	Alg       int64  // LONG lAlg;      // COSE algorithm
+	Alg       int32  // LONG lAlg;      // COSE algorithm
 
 	// Signature that was generated for this attestation.
 	Signature []byte // PBYTE pbSignature;

@@ -16,5 +16,5 @@ type RawCOSECredentialParameter struct {
 	CredentialType *uint16 // LPCWSTR pwszCredentialType
 
 	// Well-known COSE algorithm specifying the algorithm to use for the credential.
-	Alg int64 // LONG lAlg
+	Alg int32 // LONG lAlg
 }

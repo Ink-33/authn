@@ -1,6 +1,7 @@
 package share
 
 import (
+	"fmt"
 	"unsafe"
 
 	"github.com/Ink-33/authn/api/define"
@@ -34,7 +35,7 @@ type RawCredentialAttestation struct {
 	//      NULL - not able to decode the CBOR attestation information
 	//  WEBAUTHN_ATTESTATION_DECODE_COMMON
 	//      PWEBAUTHN_COMMON_ATTESTATION;
-	AttestationDecode uintptr // PVOID pvAttestationDecode
+	AttestationDecode unsafe.Pointer // PVOID pvAttestationDecode
 
 	// The CBOR encoded Attestation Object to be returned to the RP.
 	AttestationObjectLen uint32 // DWORD              cbAttestationObject
@@ -125,12 +126,13 @@ func (c *RawCredentialAttestation) DeRaw() *CredentialAttestation {
 	if c == nil {
 		return nil
 	}
+	fmt.Printf("c: %v\n", c)
 	decode := (*CommonAttestation)(nil)
 	switch c.AttestationDecodeType {
 	case define.WebAuthAttestationDecodeNone:
 		decode = nil
 	case define.WebAuthAttestationDecodeCommon:
-		decode = (*RawCommonAttestation)(unsafe.Pointer(c.AttestationDecode)).DeRaw()
+		decode = (*RawCommonAttestation)(c.AttestationDecode).DeRaw()
 	}
 	return &CredentialAttestation{
 		Version:    c.Version,

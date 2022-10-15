@@ -91,7 +91,7 @@ func GetErrorName(hr hresult.HResult) string {
 // GetPlatformCredentialList ...
 func GetPlatformCredentialList(options *share.RawGetCredentialsOptions) (credList []*share.CredentialDetails, err error) {
 	proc := webauthn.NewProc("WebAuthNGetPlatformCredentialList")
-	proc.Find()
+	err = proc.Find()
 	if err != nil {
 		return nil, err
 	}

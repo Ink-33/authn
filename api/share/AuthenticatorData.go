@@ -2,8 +2,8 @@ package share
 
 import (
 	"encoding/binary"
-	"fmt"
 
+	"github.com/Ink-33/authn/api/cose"
 	"github.com/fxamacker/cbor/v2"
 )
 
@@ -18,7 +18,7 @@ type AuthenticatorData struct {
 type CredentialData struct {
 	AAGUID              []byte
 	CredentialID        []byte
-	CredentialPublicKey any
+	CredentialPublicKey cose.COSEPublicKey
 }
 
 type Flags struct {
@@ -57,15 +57,18 @@ func ParseAuthenticatorData(data []byte) (*AuthenticatorData, error) {
 		copy(cd.AAGUID[:], data[37:53])
 		i := 55 + int(cidlen) + 1
 		for ; i < len(data)+1; i++ {
-			err := cbor.Unmarshal(data[55+cidlen:i], &cd.CredentialPublicKey)
+			pk, err := cose.ParseCOSEKey(data[55+cidlen : i])
 			if err == nil {
+				cd.CredentialPublicKey = pk
 				break
 			}
 		}
 		d.AttestedCredentialData = cd
 		if i != len(data) {
-			fmt.Println("TODO: parse exts")
-			// TODO
+			err := cbor.Unmarshal(data[i:], d.Extensions)
+			if err != nil {
+				return nil, err
+			}
 		}
 	}
 
