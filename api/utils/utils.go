@@ -10,12 +10,24 @@ import (
 	"golang.org/x/sys/windows"
 )
 
-var kernel32 = windows.NewLazySystemDLL("Kernel32.dll")
+var terminalhWnd uintptr
 
-// GetConsoleWindows retrieves the window handle used by the console associated with the calling process.
-func GetConsoleWindows() (hWnd uintptr) {
+func init() {
+	terminalhWnd = GetForegroundWindow()
+}
+
+var kernel32 = windows.NewLazySystemDLL("Kernel32.dll")
+var user32 = windows.NewLazySystemDLL("User32.dll")
+
+// GetConsoleWindow retrieves the window handle used by the console associated with the calling process.
+func GetConsoleWindow() (hWnd uintptr) {
 	hWnd, _, _ = kernel32.NewProc("GetConsoleWindow").Call()
 	return
+}
+
+// GetHostWindow retrieves the window handle used by the foreground window who starts the caliing process.
+func GetHostWindow() (hWnd uintptr) {
+	return terminalhWnd
 }
 
 // UTF16PtrtoString converts a pointer to a UTF16 string into a Go string.
@@ -74,4 +86,9 @@ func BytesBuilder(ptr *byte, len uint32) (buf []byte) {
 // CreateCancelID returns a new windows guid
 func CreateCancelID() (windows.GUID, error) {
 	return windows.GUIDFromString("{" + uuid.New().String() + "}")
+}
+
+func GetForegroundWindow() (hWnd uintptr) {
+	hWnd, _, _ = user32.NewProc("GetForegroundWindow").Call()
+	return
 }

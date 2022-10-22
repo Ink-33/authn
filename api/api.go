@@ -76,7 +76,7 @@ func (c *WebAuthNClient) MakeCredential(user User, origin string, opts *share.Ra
 		return nil, err
 	}
 	opts.CancellationID = &cancelID
-	return raw.AuthenticatorMakeCredential(utils.GetConsoleWindows(),
+	return raw.AuthenticatorMakeCredential(utils.GetHostWindow(),
 		&c.RPInfo,
 		&share.RawUserInfo{
 			Version:     define.WebAuthNUserEntityInformationCurrentVersion,
@@ -104,7 +104,7 @@ func (c *WebAuthNClient) GetAssertion(origin string, opts *share.RawAuthenticato
 		return nil, err
 	}
 	return raw.AuthenticatorGetAssertion(
-		utils.GetConsoleWindows(),
+		utils.GetHostWindow(),
 		c.RPInfo.ID,
 		cd,
 		opts,
