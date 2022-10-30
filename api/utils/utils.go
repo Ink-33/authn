@@ -10,12 +10,6 @@ import (
 	"golang.org/x/sys/windows"
 )
 
-var terminalhWnd uintptr
-
-func init() {
-	terminalhWnd = GetForegroundWindow()
-}
-
 var kernel32 = windows.NewLazySystemDLL("Kernel32.dll")
 var user32 = windows.NewLazySystemDLL("User32.dll")
 
@@ -27,7 +21,7 @@ func GetConsoleWindow() (hWnd uintptr) {
 
 // GetHostWindow retrieves the window handle used by the foreground window who starts the caliing process.
 func GetHostWindow() (hWnd uintptr) {
-	return terminalhWnd
+	return GetForegroundWindow()
 }
 
 // UTF16PtrtoString converts a pointer to a UTF16 string into a Go string.

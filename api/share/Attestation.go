@@ -1,7 +1,6 @@
 package share
 
 import (
-	"fmt"
 	"unsafe"
 
 	"github.com/Ink-33/authn/api/define"
@@ -126,7 +125,6 @@ func (c *RawCredentialAttestation) DeRaw() *CredentialAttestation {
 	if c == nil {
 		return nil
 	}
-	fmt.Printf("c: %v\n", c)
 	decode := (*CommonAttestation)(nil)
 	switch c.AttestationDecodeType {
 	case define.WebAuthAttestationDecodeNone:

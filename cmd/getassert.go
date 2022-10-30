@@ -20,7 +20,7 @@ func GetAssertion(c *api.WebAuthNClient) (func(), error) {
 
 	return func() {
 		fmt.Printf("RPID Hash: %v\n",
-			base64.RawURLEncoding.EncodeToString(b.AuthenticatorData.RPIDHash))
+			base64.RawURLEncoding.EncodeToString(b.AuthenticatorData.RPIDHash[:]))
 
 		fmt.Printf("User Present: %v\n", b.AuthenticatorData.Flags.UserPresent)
 		fmt.Printf("RFU1: %v\n", b.AuthenticatorData.Flags.RFU1)

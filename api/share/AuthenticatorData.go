@@ -5,10 +5,11 @@ import (
 
 	"github.com/Ink-33/authn/api/cose"
 	"github.com/fxamacker/cbor/v2"
+	"github.com/google/uuid"
 )
 
 type AuthenticatorData struct {
-	RPIDHash               []byte
+	RPIDHash               [32]byte
 	Flags                  Flags
 	SignCounter            uint32
 	AttestedCredentialData *CredentialData
@@ -16,7 +17,7 @@ type AuthenticatorData struct {
 }
 
 type CredentialData struct {
-	AAGUID              []byte
+	AAGUID              uuid.UUID
 	CredentialID        []byte
 	CredentialPublicKey cose.COSEPublicKey
 }

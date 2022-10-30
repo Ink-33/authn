@@ -31,21 +31,18 @@ func MakeCred(c *api.WebAuthNClient) (func(), error) {
 		// fmt.Printf("Extensions: %v\n", a.Extensions)
 
 		fmt.Printf("RPID Hash: %v\n",
-			base64.RawURLEncoding.EncodeToString(a.AuthenticatorData.RPIDHash))
+			base64.RawURLEncoding.EncodeToString(a.AuthenticatorData.RPIDHash[:]))
 
 		fmt.Printf("User Present: %v\n", a.AuthenticatorData.Flags.UserPresent)
-		fmt.Printf("RFU1: %v\n", a.AuthenticatorData.Flags.RFU1)
 		fmt.Printf("User Verified: %v\n", a.AuthenticatorData.Flags.UserVerified)
 		fmt.Printf("Backup Eligibility: %v\n", a.AuthenticatorData.Flags.BackupEligibility)
 		fmt.Printf("Backup State: %v\n", a.AuthenticatorData.Flags.BackupState)
-		fmt.Printf("RFU2: %v\n", a.AuthenticatorData.Flags.RFU2)
 		fmt.Printf("Attested credential data included: %v\n", a.AuthenticatorData.Flags.AttestedCredentialData)
 		fmt.Printf("Extension data included: %v\n", a.AuthenticatorData.Flags.ExtensionData)
 
 		fmt.Printf("Sign Counter: %v\n", a.AuthenticatorData.SignCounter)
 
-		fmt.Printf("AAGUID: %v\n",
-			base64.RawURLEncoding.EncodeToString(a.AuthenticatorData.AttestedCredentialData.AAGUID))
+		fmt.Printf("AAGUID: %v\n", a.AuthenticatorData.AttestedCredentialData.AAGUID.String())
 
 		fmt.Printf("CredentialID:%v\n",
 			base64.RawURLEncoding.EncodeToString(a.AuthenticatorData.AttestedCredentialData.CredentialID))

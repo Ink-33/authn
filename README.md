@@ -23,9 +23,10 @@ Is User Verifying Platform Authenticator Available: true
 Select operation:
 
 (1): Make Credential
-(2): Get Assertion
-(3): Get Platform Credential List
-(4): Delete Platform Credential
+(2): Show Authenticator Attestation Certificate
+(3): Get Assertion
+(4): Get Platform Credential List
+(5): Delete Platform Credential
 
 (0): Exit
 

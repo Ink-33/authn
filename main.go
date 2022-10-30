@@ -12,7 +12,7 @@ import (
 func main() {
 	fmt.Printf("Cli tool version: %v\n", cmd.Version)
 	fmt.Printf("WebAuthN API Version: %v\n", raw.GetAPIVersionNumber())
-	fmt.Printf("Is User Verifying Platform Authenticator Available: %v\n", raw.IsUserVerifyingPlatformAuthenticatorAvailable())
+	fmt.Printf("Is User Verifying Platform Authenticator Available: %v\n\n", raw.IsUserVerifyingPlatformAuthenticatorAvailable())
 	c := api.NewClient("go.webauthn.demo.app", "WebAuthN From Golang", "")
 
 	choices := interact.Choose{
@@ -21,6 +21,10 @@ func main() {
 			interact.NewChoice(
 				"Make Credential",
 				func() (func(), error) { return cmd.MakeCred(c) },
+			),
+			interact.NewChoice(
+				"Show Authenticator Attestation Certificate",
+				func() (func(), error) { return cmd.ShowCertInfo(c) },
 			),
 			interact.NewChoice(
 				"Get Assertion",
